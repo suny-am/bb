@@ -26,23 +26,23 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/suny-am/bitbucket-cli">
     <img src=".docs/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">bitbucket-cli</h3>
 
   <p align="center">
-    project_description
+    CLI For BitBucket Cloud
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/suny-am/bitbucket-cli"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://github.com/suny-am/bitbucket-cli">View Demo</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -77,33 +77,13 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `bsky_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+TBD
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 ### Built With
 
-[![.NET][.NET]][.NET-url]
-<br>
-[![Blazor][Blazor]][Blazor-url]
-<br>
-[![Bun][Bun]][Bun-url]
-<br>
-[![Next][Next.js]][Next-url]
-<br>
-[![OpenGL][OpenGL]][OpenGL-url]
-<br>
-[![Rails][Rails]][Rails-url]
-<br>
-[![React][React.js]][React-url]
-<br>
-[![Vite][Vite]][Vite-url]
-<br>
-[![Vue][Vue.js]][Vue-url]
-<br>
-[![K3s][K3s]][K3s-url]
-<br>
-[![Podman][Podman]][Podman-url]
+TBD
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
@@ -120,7 +100,7 @@ This is an example of how to list things you need to use the software and how to
 #### npm
 
   ```sh
-  npm install npm@latest -g
+  # TBD
   ```
 
 ### Installation
@@ -130,20 +110,12 @@ This is an example of how to list things you need to use the software and how to
 #### 2. Clone the repo
 
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/suny-am/bitbucket-cli.git
    ```
 
-#### 3. Install NPM packages
-
+#### 3. TBD
    ```sh
-   # Install NPM packages
-   npm install
-   ```
-
-#### 4. Enter your API in `config.js`
-
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+   # TBD
    ```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
@@ -160,12 +132,12 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-  - [ ] Nested Feature
+- [ ] TBD 1
+- [ ] TBD 2
+- [ ] TBD 3
+  - [ ] Nested TBD
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
@@ -185,8 +157,8 @@ Don't forget to give the project a star! Thanks again!
 ### 1. Fork the Project
 
 ```sh
-gh repo fork suny-am/documentation-templates --clone
-cd documentation-templates
+gh repo fork suny-am/bitbucket-cli --clone
+cd bitbucket-cli
 ```
 
 ### 2. Create your Feature Branch
@@ -225,14 +197,15 @@ Distributed under the MIT License. See [LICENCE.txt](LICENCE.txt) for more infor
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@bsky_handle](https://bsky.app/profile/bsky_handle) - <email@email_client.com>
+Your Name - [@bsky_handle](https://bsky.app/profile/bsky_handle) - <visualarea.1@gmail.com>
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/suny-am/bitbucket-cli](https://github.com/suny-am/bitbucket-cli)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- ACKNOWLEDGMENTS -->
 
+<!-- 
 ## Acknowledgments
 
 <div style="padding:10px; border-radius: 5px;">
@@ -259,45 +232,24 @@ I would like to thank the following people for their contributions and support:
 
 Thank you all for your time and effort in making this project better!
 
-</div>
+</div> 
+-->
   
 <br>
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/suny-am/documentation-templates.svg?style=for-the-badge
-[contributors-url]: https://github.com/suny-am/documentation-templates/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/suny-am/documentation-templates?style=for-the-badge
-[forks-url]: https://github.com/suny-am/documentation-templates/network/members
-[stars-shield]: https://img.shields.io/github/stars/suny-am/documentation-templates.svg?style=for-the-badge
-[stars-url]: https://github.com/suny-am/documentation-templates/stargazers
-[issues-shield]: https://img.shields.io/github/issues/suny-am/documentation-templates.svg?style=for-the-badge
-[issues-url]: https://github.com/suny-am/documentation-templates/issues
-[license-shield]: https://img.shields.io/github/license/suny-am/documentation-templates.svg?style=for-the-badge
-[license-url]: https://github.com/suny-am/documentation-templates/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/suny-am/bitbucket-cli.svg?style=for-the-badge
+[contributors-url]: https://github.com/suny-am/bitbucket-cli/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/suny-am/bitbucket-cli?style=for-the-badge
+[forks-url]: https://github.com/suny-am/bitbucket-cli/network/members
+[stars-shield]: https://img.shields.io/github/stars/suny-am/bitbucket-cli.svg?style=for-the-badge
+[stars-url]: https://github.com/suny-am/bitbucket-cli/stargazers
+[issues-shield]: https://img.shields.io/github/issues/suny-am/bitbucket-cli.svg?style=for-the-badge
+[issues-url]: https://github.com/suny-am/bitbucket-cli/issues
+[license-shield]: https://img.shields.io/github/license/suny-am/bitbucket-cli.svg?style=for-the-badge
+[license-url]: https://github.com/suny-am/bitbucket-cli/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/carl-sandberg-01070a2b6/
 [product-screenshot]: .docs/images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Rails]: https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white
-[Rails-url]: https://rubyonrails.org
-[.NET]: https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white
-[.NET-url]: https://dotnet.microsoft.com/
-[Vite]: https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white
-[Vite-url]: https://vitejs.dev/
-[OpenGL]: https://img.shields.io/badge/OpenGL-%23FFFFFF.svg?style=for-the-badge&logo=opengl
-[OpenGL-url]: https://www.opengl.org/
-[Bun]: https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white
-[Bun-url]: https://bun.sh/
-[Blazor]: https://img.shields.io/badge/blazor-%235C2D91.svg?style=for-the-badge&logo=blazor&logoColor=white
-[Blazor-url]: https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor/
-[K3s]:https://img.shields.io/badge/K3s-000000?style=for-the-badge&logo=k3s&logoColor=FFC61C
-[K3s-url]:https://docs.k3s.io
-[Podman]: https://img.shields.io/badge/podman-000000?style=for-the-badge&logo=podman&logoColor=white&logoSize=large&color=892CA0
-[Podman-url]:https://podman.io
