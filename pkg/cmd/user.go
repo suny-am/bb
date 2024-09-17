@@ -14,14 +14,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var User string
+var UserID string
+var Email string
 
 // userCmd represents the user command
 var userCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Bitbucket user information",
 	Long: `Use this command to get general information about one or more
-	Bitbucket users.`,
+Bitbucket users.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := godotenv.Load()
 		if err != nil {
@@ -40,9 +41,21 @@ var userCmd = &cobra.Command{
 
 		endpoint := "https://api.bitbucket.org/2.0/user"
 
-		if User != "" {
-			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/%s", User)
+		if UserID != "" && Email == "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/users/%{s}", UserID)
 		}
+
+		if UserID == "" && Email != "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", Email)
+		}
+
+		// Email overrides User for now
+
+		if UserID != "" && Email != "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", Email)
+		}
+
+		fmt.Println(endpoint)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
@@ -61,7 +74,11 @@ var userCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
-			output, _ := json.MarshalIndent(data, "", "  ")
+			output, err := json.MarshalIndent(data, "", "  ")
+
+			if err != nil {
+				fmt.Println(err)
+			}
 
 			fmt.Println(string(output))
 		}
@@ -80,5 +97,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// userCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	userCmd.Flags().StringVarP(&User, "user", "u", "", "Username registered on Bitbucket")
+	userCmd.Flags().StringVarP(&UserID, "user", "u", "", "User Bitbucket Account ID/UUID")
+	userCmd.Flags().StringVarP(&Email, "email", "e", "", "Email registered on Bitbucket")
 }
