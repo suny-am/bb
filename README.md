@@ -1,21 +1,6 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -33,7 +18,7 @@
 <h3 align="center">bitbucket-cli</h3>
 
   <p align="center">
-    CLI For BitBucket Cloud
+    CLI For Bitbucket Cloud
     <br />
     <a href="https://github.com/suny-am/bitbucket-cli"><strong>Explore the docs »</strong></a>
     <br />
@@ -54,6 +39,7 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
+        <li><a href="#status">Built With</a></li>
       </ul>
     </li>
     <li>
@@ -68,7 +54,8 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <!-- <li><a href="#acknowledgments">Acknowledgments</a></li> -->
+    <li><a href="#references">References</a></li>
   </ol>
 </details>
 
@@ -83,7 +70,13 @@ TBD
 
 ### Built With
 
-TBD
+[![go][go]][go-url]
+
+<p align="right"><a href="#readme-top">🔝</a></p>
+
+### Status
+
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli?ref=badge_shield&issueType=license)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
@@ -95,27 +88,34 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+Testing and developing the application locally requires **go1.22.7** to be available (the latest release to be tested for now.
 
-#### npm
+#### Go
 
   ```sh
-  # TBD
+  # MacOS example
+  brew install go
+  go version
+  # example output: 
+  # go version go1.22.7 linux/amd64  
   ```
 
 ### Installation
 
-#### 1. Get a free API Key at [https://example.com](https://example.com)
-
-#### 2. Clone the repo
+#### 1. Clone the repo
 
    ```sh
    git clone https://github.com/suny-am/bitbucket-cli.git
    ```
 
-#### 3. TBD
+#### 2. TBD
+
+##### 2.a Docker
+
    ```sh
-   # TBD
+   docker build . -t "bitbucket-cli"
+   docker run bitbucket-cli
+   docker-exec -it bitbucket-cli zsh
    ```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
@@ -140,11 +140,6 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
 
 <p align="right"><a href="#readme-top">🔝</a></p>
-
-<!-- CONTRIBUTING -->
-## Resources
-
-- [Atlassian BitBucket API Documentation](https://developer.atlassian.com/cloud/bitbucket/rest/)
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -203,6 +198,12 @@ Project Link: [https://github.com/suny-am/bitbucket-cli](https://github.com/suny
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
+## References
+
+- [Atlassian Bitbucket Cloud REST API Documentation](https://developer.atlassian.com/cloud/bitbucket/rest/)
+
+<p align="right"><a href="#readme-top">🔝</a></p>
+
 <!-- ACKNOWLEDGMENTS -->
 
 <!-- 
@@ -253,3 +254,5 @@ Thank you all for your time and effort in making this project better!
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/carl-sandberg-01070a2b6/
 [product-screenshot]: .docs/images/screenshot.png
+[go]: https://img.shields.io/badge/go-%2300ADD8?style=for-the-badge&logo=go&logoColor=white&logoSize=auto
+[go-url]: https://go.dev/
