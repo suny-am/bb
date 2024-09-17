@@ -64,7 +64,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-TBD
+A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket resources without leaving your terminal.
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
