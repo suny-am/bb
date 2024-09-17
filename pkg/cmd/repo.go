@@ -14,16 +14,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Flag variables
+var Workspace string
+
 // repoCmd represents the repo command
 var repoCmd = &cobra.Command{
 	Use:   "repo",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Bitbucket repository information",
+	Long: `Use this command to get general information about public or
+	workspace repositories.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := godotenv.Load()
 		if err != nil {
@@ -105,4 +104,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// repoCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	repoCmd.Flags().StringVarP(&Workspace, "workspace", "w", "", "workspace name")
+
 }
