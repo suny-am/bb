@@ -42,7 +42,7 @@ Bitbucket users.`,
 		endpoint := "https://api.bitbucket.org/2.0/user"
 
 		if UserID != "" && Email == "" {
-			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/users/%{s}", UserID)
+			endpoint = fmt.Sprintf(`https://api.bitbucket.org/2.0/users/{%s}`, UserID)
 		}
 
 		if UserID == "" && Email != "" {
@@ -54,8 +54,6 @@ Bitbucket users.`,
 		if UserID != "" && Email != "" {
 			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", Email)
 		}
-
-		fmt.Println(endpoint)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).

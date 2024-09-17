@@ -22,8 +22,8 @@ var Workspace string
 var repoCmd = &cobra.Command{
 	Use:   "repo",
 	Short: "Bitbucket repository information",
-	Long: `Use this command to get general information about public or
-	workspace repositories.`,
+	Long: `Use this command to get general information about public 
+or workspace repositories.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TBD: get system env instead?
 		err := godotenv.Load()
@@ -94,6 +94,6 @@ func init() {
 	// is called directly, e.g.:
 	// repoCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	repoCmd.Flags().StringVarP(&Workspace, "workspace", "w", "", "workspace name")
-	repoCmd.Flags().StringVarP(&Repository, "repository", "r", "", "repository name")
+	repoCmd.Flags().StringVarP(&Repository, "repository", "r", "", "repository name (requires --workspace)")
 
 }
