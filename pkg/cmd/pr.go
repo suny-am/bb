@@ -14,12 +14,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// commitCmd represents the commit command
-var commitCmd = &cobra.Command{
-	Use:   "commit",
-	Short: "Bitbucket commit information",
-	Long: `Use this command to get commit activity information
-	from either public or workspace repositories.`,
+var prCmd = &cobra.Command{
+	Use:   "pr",
+	Short: "Pull Request information",
+	Long: `Get information for a pull request,
+such as status, commit tree and more.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := godotenv.Load()
 		if err != nil {
@@ -30,9 +29,13 @@ var commitCmd = &cobra.Command{
 		repository, _ := cmd.Flags().GetString("repository")
 		commit, _ := cmd.Flags().GetString("commit")
 
-		client := resty.New()
+		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pullrequests", workspace, repository)
 
-		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", workspace, repository, commit)
+		if commit != "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s/pullrequests", workspace, repository, commit)
+		}
+
+		client := resty.New()
 
 		username := os.Getenv("BITBUCKET_USERNAME")
 		appPassword := os.Getenv("BITBUCKET_APP_PASSWORD")
@@ -57,7 +60,7 @@ var commitCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data, "", "  ")
+			output, err := json.MarshalIndent(data["values"], "", "  ")
 
 			if err != nil {
 				fmt.Println(err)
@@ -69,13 +72,12 @@ var commitCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(commitCmd)
+	rootCmd.AddCommand(prCmd)
 
-	commitCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	commitCmd.Flags().StringP("repository", "r", "", "Repository for the commit")
-	commitCmd.Flags().StringP("commit", "c", "", "Target commit")
+	prCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	prCmd.Flags().StringP("repository", "r", "", "Target repository")
+	prCmd.Flags().StringP("commit", "c", "", "commit for the target PR(s)")
 
-	commitCmd.MarkFlagRequired("workspace")
-	commitCmd.MarkFlagRequired("repository")
-	commitCmd.MarkFlagRequired("commit")
+	prCmd.MarkFlagRequired("workspace")
+	prCmd.MarkFlagRequired("repository")
 }

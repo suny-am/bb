@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
 package cmd
 
@@ -14,20 +14,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// repoCmd represents the repo command
 var repoCmd = &cobra.Command{
 	Use:   "repo",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Bitbucket repository information",
+	Long: `Use this command to get general information about public 
+or workspace repositories.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// TBD: get system env instead?
 		err := godotenv.Load()
 		if err != nil {
 			fmt.Printf("Error loading .env file")
+		}
+
+		workspace, _ := cmd.Flags().GetString("workspace")
+		repository, _ := cmd.Flags().GetString("repository")
+
+		limit, _ := cmd.Flags().GetString("limit")
+
+		if limit == "" {
+			limit = "10"
 		}
 
 		username := os.Getenv("BITBUCKET_USERNAME")
@@ -38,11 +43,23 @@ to quickly create a Cobra application.`,
 
 		client := resty.New()
 
-		endpoint := "https://api.bitbucket.org/2.0/repositories/avupublicapis" // TBD add workspace as argument
+		// TBD add workspace as argument
+
+		endpoint := "https://api.bitbucket.org/2.0/repositories"
+
+		if workspace != "" {
+			endpoint = fmt.Sprintf("%s/%s", endpoint, workspace)
+
+			// --repository requires --workspace
+			if repository != "" {
+				endpoint = fmt.Sprintf("%s/%s", endpoint, repository)
+			}
+		}
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
 			SetHeader("Accept", "application/json").
+			SetQueryParam("pagelen", limit).
 			EnableTrace().
 			Get(endpoint)
 
@@ -51,58 +68,28 @@ to quickly create a Cobra application.`,
 		}
 
 		if resp.IsSuccess() {
-			var dat map[string]interface{}
+			var data map[string]interface{}
 
-			if err := json.Unmarshal([]byte(resp.String()), &dat); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
 				fmt.Println(err)
 			}
 
-			repositories := dat["values"].([]interface{})
+			output, err := json.MarshalIndent(data["values"], "", "  ")
 
-			for repoIdx := range repositories {
-				repo := repositories[repoIdx].(map[string]interface{})
-
-				// links := repo["links"].(map[string]interface{})
-				// for linkIdx := range links {
-				// 	l, ok := links[linkIdx].(map[string]interface{})
-				// 	if ok {
-				// 		fmt.Printf("Link: %s\n", l["href"])
-				// 	}
-				// 	if !ok {
-				// 		l, ok := links[linkIdx].([]interface{})
-				// 		if ok {
-				// 			for i := range l {
-				// 				ref := l[i]
-				// 				ll, ok := ref.(map[string]interface{})
-				// 				if ok {
-				// 					fmt.Printf("\tLink: %s\n", ll["href"])
-				// 				}
-				// 			}
-				// 		}
-				// 	}
-				// }
-
-				fmt.Println(repo["uuid"])
-				fmt.Println(repo["name"])
-				owner := repo["owner"].(map[string]interface{})["username"]
-				fmt.Printf("Owner: %s\n", owner)
-				fmt.Printf("Size: %f Bytes\n\n", repo["size"].(float64))
+			if err != nil {
+				fmt.Println(err)
 			}
-		}
 
+			fmt.Println(string(output))
+
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(repoCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// repoCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// repoCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	repoCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	repoCmd.Flags().StringP("repository", "r", "", "Target repository")
+	repoCmd.Flags().StringP("limit", "l", "", "Item limit")
 }

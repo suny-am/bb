@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE visualarea.1@gmail.com
+Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
 package cmd
 
@@ -12,13 +12,12 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "bitbucket-cli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
+	Long: `This CLI enables shell interaction with various
+	Bitbucket Cloud resources.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Fetch personal commit history, workspace statistics, branch activity,
+Pull Request information and much more, all from your terminal.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -42,5 +41,4 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
