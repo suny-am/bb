@@ -7,7 +7,10 @@ require (
 	github.com/spf13/cobra v1.8.1
 )
 
-require golang.org/x/net v0.27.0 // indirect
+require (
+	golang.org/x/net v0.27.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
 
 require (
 	github.com/go-resty/resty/v2 v2.15.0

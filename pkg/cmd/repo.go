@@ -4,14 +4,13 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+	keyring "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 var repoCmd = &cobra.Command{
@@ -35,11 +34,14 @@ or workspace repositories.`,
 			limit = "10"
 		}
 
-		username := os.Getenv("BITBUCKET_USERNAME")
-		appPassword := os.Getenv("BITBUCKET_APP_PASSWORD")
-		credentials := fmt.Sprintf("%s:%s", username, appPassword)
-		b64 := base64.StdEncoding.EncodeToString([]byte(credentials))
-		authHeaderData := fmt.Sprintf("Basic %s", b64)
+		credentials, err := keyring.Credentials()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		authHeaderData := fmt.Sprintf("Basic %s", credentials)
 
 		client := resty.New()
 

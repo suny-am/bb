@@ -20,7 +20,7 @@ Fetch personal commit history, workspace statistics, branch activity,
 Pull Request information and much more, all from your terminal.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	// Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
