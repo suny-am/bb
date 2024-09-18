@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE visualarea.1@gmail.com
+Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
 package cmd
 

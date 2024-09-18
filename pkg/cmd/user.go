@@ -14,10 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var UserID string
-var Email string
-
-// userCmd represents the user command
 var userCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Bitbucket user information",
@@ -28,6 +24,9 @@ Bitbucket users.`,
 		if err != nil {
 			fmt.Printf("Error loading .env file")
 		}
+
+		userId, _ := cmd.Flags().GetString("userId")
+		email, _ := cmd.Flags().GetString("email")
 
 		username := os.Getenv("BITBUCKET_USERNAME")
 		appPassword := os.Getenv("BITBUCKET_APP_PASSWORD")
@@ -41,18 +40,18 @@ Bitbucket users.`,
 
 		endpoint := "https://api.bitbucket.org/2.0/user"
 
-		if UserID != "" && Email == "" {
-			endpoint = fmt.Sprintf(`https://api.bitbucket.org/2.0/users/{%s}`, UserID)
+		if userId != "" && email == "" {
+			endpoint = fmt.Sprintf(`https://api.bitbucket.org/2.0/users/{%s}`, userId)
 		}
 
-		if UserID == "" && Email != "" {
-			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", Email)
+		if userId == "" && email != "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", email)
 		}
 
-		// Email overrides User for now
+		// email overrides User for now
 
-		if UserID != "" && Email != "" {
-			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", Email)
+		if userId != "" && email != "" {
+			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/user/emails/%s", email)
 		}
 
 		resp, err := client.R().
@@ -86,15 +85,6 @@ Bitbucket users.`,
 func init() {
 	rootCmd.AddCommand(userCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// userCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// userCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	userCmd.Flags().StringVarP(&UserID, "user", "u", "", "User Bitbucket Account ID/UUID")
-	userCmd.Flags().StringVarP(&Email, "email", "e", "", "Email registered on Bitbucket")
+	userCmd.Flags().StringP("user", "u", "", "Target user Bitbucket account ID/UUID")
+	userCmd.Flags().StringP("email", "e", "", "Targer user email registered on Bitbucket")
 }

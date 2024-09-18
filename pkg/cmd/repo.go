@@ -14,11 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Flag variables
-var Repository string
-var Workspace string
-
-// repoCmd represents the repo command
 var repoCmd = &cobra.Command{
 	Use:   "repo",
 	Short: "Bitbucket repository information",
@@ -30,6 +25,9 @@ or workspace repositories.`,
 		if err != nil {
 			fmt.Printf("Error loading .env file")
 		}
+
+		workspace, _ := cmd.Flags().GetString("workspace")
+		repository, _ := cmd.Flags().GetString("repository")
 
 		username := os.Getenv("BITBUCKET_USERNAME")
 		appPassword := os.Getenv("BITBUCKET_APP_PASSWORD")
@@ -43,12 +41,12 @@ or workspace repositories.`,
 
 		endpoint := "https://api.bitbucket.org/2.0/repositories"
 
-		if Workspace != "" {
-			endpoint = fmt.Sprintf("%s/%s", endpoint, Workspace)
+		if workspace != "" {
+			endpoint = fmt.Sprintf("%s/%s", endpoint, workspace)
 
 			// --repository requires --workspace
-			if Repository != "" {
-				endpoint = fmt.Sprintf("%s/%s", endpoint, Repository)
+			if repository != "" {
+				endpoint = fmt.Sprintf("%s/%s", endpoint, repository)
 			}
 		}
 
@@ -84,16 +82,7 @@ or workspace repositories.`,
 func init() {
 	rootCmd.AddCommand(repoCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// repoCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// repoCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	repoCmd.Flags().StringVarP(&Workspace, "workspace", "w", "", "workspace name")
-	repoCmd.Flags().StringVarP(&Repository, "repository", "r", "", "repository name (requires --workspace)")
-
+	repoCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	repoCmd.Flags().StringP("repository", "r", "", "Target repository")
+	repoCmd.Flags().StringP("limit", "l", "", "Item limit")
 }
