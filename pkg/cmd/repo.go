@@ -29,6 +29,12 @@ or workspace repositories.`,
 		workspace, _ := cmd.Flags().GetString("workspace")
 		repository, _ := cmd.Flags().GetString("repository")
 
+		limit, _ := cmd.Flags().GetString("limit")
+
+		if limit == "" {
+			limit = "10"
+		}
+
 		username := os.Getenv("BITBUCKET_USERNAME")
 		appPassword := os.Getenv("BITBUCKET_APP_PASSWORD")
 		credentials := fmt.Sprintf("%s:%s", username, appPassword)
@@ -53,6 +59,7 @@ or workspace repositories.`,
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
 			SetHeader("Accept", "application/json").
+			SetQueryParam("pagelen", limit).
 			EnableTrace().
 			Get(endpoint)
 
@@ -67,7 +74,7 @@ or workspace repositories.`,
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data, "", "  ")
+			output, err := json.MarshalIndent(data["values"], "", "  ")
 
 			if err != nil {
 				fmt.Println(err)
