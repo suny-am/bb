@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	credentials "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -23,9 +24,12 @@ Pull Request information and much more, all from your terminal.`,
 	// Run: func(cmd *cobra.Command, args []string) {},
 }
 
+var CredProvider credentials.CredentialsProvider
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	CredProvider = credentials.NewCredentialsProvider()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

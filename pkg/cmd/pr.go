@@ -8,9 +8,7 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
-	keyring "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 var prCmd = &cobra.Command{
@@ -19,10 +17,6 @@ var prCmd = &cobra.Command{
 	Long: `Get information for a pull request,
 such as status, commit tree and more.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Printf("Error loading .env file")
-		}
 
 		workspace, _ := cmd.Flags().GetString("workspace")
 		repository, _ := cmd.Flags().GetString("repository")
@@ -36,7 +30,7 @@ such as status, commit tree and more.`,
 
 		client := resty.New()
 
-		credentials, err := keyring.Credentials()
+		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
 			fmt.Println(err.Error())
