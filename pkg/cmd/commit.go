@@ -8,9 +8,7 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
-	keyring "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 // commitCmd represents the commit command
@@ -20,11 +18,6 @@ var commitCmd = &cobra.Command{
 	Long: `Use this command to get commit activity information
 	from either public or workspace repositories.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Printf("Error loading .env file")
-		}
-
 		workspace, _ := cmd.Flags().GetString("workspace")
 		repository, _ := cmd.Flags().GetString("repository")
 		commit, _ := cmd.Flags().GetString("commit")
@@ -33,7 +26,7 @@ var commitCmd = &cobra.Command{
 
 		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", workspace, repository, commit)
 
-		credentials, err := keyring.Credentials()
+		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
 			fmt.Println(err.Error())

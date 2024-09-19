@@ -8,9 +8,7 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
-	keyring "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 var userCmd = &cobra.Command{
@@ -19,15 +17,11 @@ var userCmd = &cobra.Command{
 	Long: `Use this command to get general information about one or more
 Bitbucket users.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Printf("Error loading .env file")
-		}
 
 		userId, _ := cmd.Flags().GetString("userId")
 		email, _ := cmd.Flags().GetString("email")
 
-		credentials, err := keyring.Credentials()
+		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
 			fmt.Println(err.Error())

@@ -10,7 +10,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
-	keyring "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 var repoCmd = &cobra.Command{
@@ -34,7 +33,7 @@ or workspace repositories.`,
 			limit = "10"
 		}
 
-		credentials, err := keyring.Credentials()
+		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
 			fmt.Println(err.Error())
