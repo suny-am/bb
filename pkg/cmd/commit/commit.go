@@ -14,6 +14,32 @@ import (
 
 var Credentials = cmd.Credentials
 
+type (
+	CommitResponse struct {
+		Author  Author
+		Date    string
+		Hash    string
+		Message string
+		Parents []ParentCommit
+	}
+	Author struct {
+		Raw  string
+		Type string
+		User User
+	}
+	User struct {
+		Account_Id   string
+		Display_Name string
+		Nickname     string
+		Type         string
+		Uuid         string
+	}
+	ParentCommit struct {
+		Hash string
+		Type string
+	}
+)
+
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
@@ -42,19 +68,14 @@ var commitCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var data map[string]interface{}
+			var response CommitResponse
 
-			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data, "", "  ")
-
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println(string(output))
+			fmt.Printf("Author: %s\n",
+				response.Author.User.Display_Name)
 		}
 	},
 }

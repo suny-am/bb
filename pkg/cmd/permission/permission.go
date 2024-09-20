@@ -25,11 +25,11 @@ type (
 	}
 
 	User struct {
-		AccountId   string
-		DisplayNamy string
-		Nickname    string
-		Type        string
-		Uuid        string
+		AccountId    string
+		Display_Name string
+		Nickname     string
+		Type         string
+		Uuid         string
 	}
 
 	Repository struct {
@@ -66,15 +66,16 @@ var permissionCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var data PermissionResponse
+			var response PermissionResponse
 
-			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
 			}
 
-			for i := range data.Values {
-				fmt.Printf("Repository: %s\n", data.Values[i].Repository.Full_Name)
-				fmt.Printf("Permission: %s\n\n", data.Values[i].Permission)
+			for i := range response.Values {
+				fmt.Printf("Repository: %s\nPermission: %s\n\n",
+					response.Values[i].Repository.Full_Name,
+					response.Values[i].Permission)
 			}
 		}
 	},
