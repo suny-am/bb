@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
-package cmd
+package user
 
 import (
 	"encoding/json"
@@ -9,7 +9,10 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
+
+var Credentials = cmd.Credentials
 
 var userCmd = &cobra.Command{
 	Use:   "user",
@@ -21,14 +24,7 @@ Bitbucket users.`,
 		userId, _ := cmd.Flags().GetString("userId")
 		email, _ := cmd.Flags().GetString("email")
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		client := resty.New()
 
@@ -79,7 +75,7 @@ Bitbucket users.`,
 }
 
 func init() {
-	rootCmd.AddCommand(userCmd)
+	cmd.RootCmd.AddCommand(userCmd)
 
 	userCmd.Flags().StringP("user", "u", "", "Target user Bitbucket account ID/UUID")
 	userCmd.Flags().StringP("email", "e", "", "Targer user email registered on Bitbucket")

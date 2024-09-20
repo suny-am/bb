@@ -9,7 +9,10 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
+
+var Credentials = cmd.Credentials
 
 var prCmd = &cobra.Command{
 	Use:   "pr",
@@ -30,14 +33,7 @@ such as status, commit tree and more.`,
 
 		client := resty.New()
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
@@ -68,7 +64,7 @@ such as status, commit tree and more.`,
 }
 
 func init() {
-	rootCmd.AddCommand(prCmd)
+	cmd.RootCmd.AddCommand(prCmd)
 
 	prCmd.Flags().StringP("workspace", "w", "", "Target workspace")
 	prCmd.Flags().StringP("repository", "r", "", "Target repository")

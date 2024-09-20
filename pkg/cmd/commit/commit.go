@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
-package cmd
+package commit
 
 import (
 	"encoding/json"
@@ -9,7 +9,10 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
+
+var Credentials = cmd.Credentials
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
@@ -26,14 +29,7 @@ var commitCmd = &cobra.Command{
 
 		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", workspace, repository, commit)
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
@@ -64,7 +60,7 @@ var commitCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(commitCmd)
+	cmd.RootCmd.AddCommand(commitCmd)
 
 	commitCmd.Flags().StringP("workspace", "w", "", "Target workspace")
 	commitCmd.Flags().StringP("repository", "r", "", "Repository for the commit")

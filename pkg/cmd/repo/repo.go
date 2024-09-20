@@ -1,16 +1,18 @@
 /*
 // Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
-package cmd
+package repo
 
 import (
 	"encoding/json"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
+
+var Credentials = cmd.Credentials
 
 var repoCmd = &cobra.Command{
 	Use:   "repo",
@@ -18,11 +20,6 @@ var repoCmd = &cobra.Command{
 	Long: `Use this command to get general information about public 
 or workspace repositories.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TBD: get system env instead?
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Printf("Error loading .env file")
-		}
 
 		workspace, _ := cmd.Flags().GetString("workspace")
 		repository, _ := cmd.Flags().GetString("repository")
@@ -33,14 +30,7 @@ or workspace repositories.`,
 			limit = "10"
 		}
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		client := resty.New()
 
@@ -88,9 +78,9 @@ or workspace repositories.`,
 }
 
 func init() {
-	rootCmd.AddCommand(repoCmd)
+	cmd.RootCmd.AddCommand(repoCmd)
 
 	repoCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	repoCmd.Flags().StringP("repository", "r", "", "Target repository")
+	repoCmd.Flags().StringP("repo", "r", "", "Target repository")
 	repoCmd.Flags().StringP("limit", "l", "", "Item limit")
 }
