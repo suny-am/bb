@@ -30,14 +30,7 @@ such as status, commit tree and more.`,
 
 		client := resty.New()
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).

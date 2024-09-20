@@ -4,6 +4,7 @@ Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -15,7 +16,7 @@ var rootCmd = &cobra.Command{
 	Use:   "bitbucket-cli",
 	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
 	Long: `This CLI enables shell interaction with various
-	Bitbucket Cloud resources.
+Bitbucket Cloud resources.
 
 Fetch personal commit history, workspace statistics, branch activity,
 Pull Request information and much more, all from your terminal.`,
@@ -24,13 +25,22 @@ Pull Request information and much more, all from your terminal.`,
 	// Run: func(cmd *cobra.Command, args []string) {},
 }
 
-var CredProvider credentials.CredentialsProvider
+var Credentials string
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	CredProvider = credentials.NewCredentialsProvider()
-	err := rootCmd.Execute()
+	CredProvider := credentials.NewCredentialsProvider()
+	credentials, err := CredProvider.GetCredentials()
+
+	Credentials = credentials
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	err = rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
@@ -45,4 +55,5 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
+	rootCmd.AddCommand(repoCmd)
 }

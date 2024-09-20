@@ -33,14 +33,12 @@ or workspace repositories.`,
 			limit = "10"
 		}
 
-		credentials, err := CredProvider.GetCredentials()
-
 		if err != nil {
 			fmt.Println(err.Error())
 			return
 		}
 
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		client := resty.New()
 
@@ -88,9 +86,7 @@ or workspace repositories.`,
 }
 
 func init() {
-	rootCmd.AddCommand(repoCmd)
-
 	repoCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	repoCmd.Flags().StringP("repository", "r", "", "Target repository")
+	repoCmd.Flags().StringP("repo", "r", "", "Target repository")
 	repoCmd.Flags().StringP("limit", "l", "", "Item limit")
 }

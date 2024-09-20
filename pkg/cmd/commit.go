@@ -26,14 +26,7 @@ var commitCmd = &cobra.Command{
 
 		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", workspace, repository, commit)
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).

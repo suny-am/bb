@@ -21,14 +21,7 @@ Bitbucket users.`,
 		userId, _ := cmd.Flags().GetString("userId")
 		email, _ := cmd.Flags().GetString("email")
 
-		credentials, err := CredProvider.GetCredentials()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		authHeaderData := fmt.Sprintf("Basic %s", credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
 
 		client := resty.New()
 

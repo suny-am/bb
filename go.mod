@@ -14,6 +14,7 @@ require (
 	github.com/zalando/go-keyring v0.2.5 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
+	gopkg.in/jeevatkm/go-model.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
