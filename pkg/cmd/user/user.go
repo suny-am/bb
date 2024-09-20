@@ -12,6 +12,15 @@ import (
 	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
 
+type (
+	UserResponse struct {
+		Type         string
+		Created_On   string
+		Display_Name string
+		Uuid         string
+	}
+)
+
 var Credentials = cmd.Credentials
 
 var userCmd = &cobra.Command{
@@ -57,19 +66,17 @@ Bitbucket users.`,
 		}
 
 		if resp.IsSuccess() {
-			var data map[string]interface{}
+			var response UserResponse
 
-			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data, "", "  ")
-
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println(string(output))
+			fmt.Printf("Display name: %s\nType: %s\nUUID: %s\nCreation time: %s",
+				response.Display_Name,
+				response.Type,
+				response.Uuid,
+				response.Created_On)
 		}
 	},
 }

@@ -12,6 +12,71 @@ import (
 	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
 
+type (
+	PullRequestResponse struct {
+		Values []PullRequest
+	}
+	PullRequest struct {
+		Author              Author
+		Close_Source_Branch bool
+		Comment_Count       int
+		Description         string
+		Destination         Destination
+		Id                  int
+		Merge_Commit        Commit
+		Links               Links
+		Reason              string
+		Source              Source
+		State               string
+		Task_Count          int
+		Title               string
+		Type                string
+		Updated_On          string
+	}
+	Links struct {
+		Self     map[string]string
+		Html     map[string]string
+		Commits  map[string]string
+		Approve  map[string]string
+		Diff     map[string]string
+		DiffStat map[string]string
+		Comments map[string]string
+		Activity map[string]string
+		Merge    map[string]string
+		Decline  map[string]string
+	}
+	Source struct {
+		Branch     Branch
+		Commit     Commit
+		Repository Repository
+	}
+	Destination struct {
+		Branch     Branch
+		Commit     Commit
+		Repository Repository
+	}
+	Commit struct {
+		Hash string
+		Type string
+	}
+	Repository struct {
+		Full_Name string
+		Name      string
+		Type      string
+		Uuid      string
+	}
+	Branch struct {
+		Name string
+	}
+	Author struct {
+		Account_Id   string
+		Display_Name string
+		Nickname     string
+		Type         string
+		Uuid         string
+	}
+)
+
 var Credentials = cmd.Credentials
 
 var prCmd = &cobra.Command{
@@ -46,19 +111,23 @@ such as status, commit tree and more.`,
 		}
 
 		if resp.IsSuccess() {
-			var data map[string]interface{}
+			var response PullRequestResponse
 
-			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data["values"], "", "  ")
-
-			if err != nil {
-				fmt.Println(err)
+			for i := range response.Values {
+				fmt.Printf("Title: %s\n", response.Values[i].Title)
+				fmt.Printf("Description: %s\n", response.Values[i].Description)
+				fmt.Printf("State: %s\n", response.Values[i].State)
+				fmt.Printf("Type: %s\n", response.Values[i].Type)
+				fmt.Printf("Source: %s\n", response.Values[i].Source.Commit.Hash)
+				fmt.Printf("Destination: %s\n", response.Values[i].Destination.Commit.Hash)
+				fmt.Printf("Comment_Count: %d\n", response.Values[i].Comment_Count)
+				fmt.Printf("Link: %s\n", response.Values[i].Links.Self["href"])
+				fmt.Printf("Updated_On: %s\n\n", response.Values[i].Updated_On)
 			}
-
-			fmt.Println(string(output))
 		}
 	},
 }
