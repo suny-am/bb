@@ -12,7 +12,7 @@ import (
 )
 
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "bitbucket-cli",
 	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
 	Long: `This CLI enables shell interaction with various
@@ -40,7 +40,7 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	err = rootCmd.Execute()
+	err = RootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
@@ -55,5 +55,4 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.AddCommand(repoCmd)
 }

@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package permission
 
 import (
 	"encoding/json"
@@ -9,10 +9,11 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
 
 type (
-	Response struct {
+	PermissionResponse struct {
 		Values []Permission
 	}
 
@@ -40,6 +41,8 @@ type (
 	}
 )
 
+var Credentials = cmd.Credentials
+
 // permissionCmd represents the permission command
 var permissionCmd = &cobra.Command{
 	Use:   "permission",
@@ -63,8 +66,7 @@ var permissionCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var data Response
-			// var data map[string]interface{}
+			var data PermissionResponse
 
 			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
 				fmt.Println(err)
@@ -79,7 +81,7 @@ var permissionCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(permissionCmd)
+	cmd.RootCmd.AddCommand(permissionCmd)
 
 	permissionCmd.Flags().StringP("user", "u", "", "Target user")
 }

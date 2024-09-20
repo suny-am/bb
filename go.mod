@@ -5,17 +5,16 @@ go 1.22.7
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
+	github.com/zalando/go-keyring v0.2.5
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/zalando/go-keyring v0.2.5 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
-	gopkg.in/jeevatkm/go-model.v1 v1.1.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
