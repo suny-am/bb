@@ -9,72 +9,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
-)
-
-type (
-	PullRequestResponse struct {
-		Values []PullRequest
-	}
-	PullRequest struct {
-		Author              Author
-		Close_Source_Branch bool
-		Comment_Count       int
-		Description         string
-		Destination         Destination
-		Id                  int
-		Merge_Commit        Commit
-		Links               Links
-		Reason              string
-		Source              Source
-		State               string
-		Task_Count          int
-		Title               string
-		Type                string
-		Updated_On          string
-	}
-	Links struct {
-		Self     map[string]string
-		Html     map[string]string
-		Commits  map[string]string
-		Approve  map[string]string
-		Diff     map[string]string
-		DiffStat map[string]string
-		Comments map[string]string
-		Activity map[string]string
-		Merge    map[string]string
-		Decline  map[string]string
-	}
-	Source struct {
-		Branch     Branch
-		Commit     Commit
-		Repository Repository
-	}
-	Destination struct {
-		Branch     Branch
-		Commit     Commit
-		Repository Repository
-	}
-	Commit struct {
-		Hash string
-		Type string
-	}
-	Repository struct {
-		Full_Name string
-		Name      string
-		Type      string
-		Uuid      string
-	}
-	Branch struct {
-		Name string
-	}
-	Author struct {
-		Account_Id   string
-		Display_Name string
-		Nickname     string
-		Type         string
-		Uuid         string
-	}
 )
 
 var PrCmd = &cobra.Command{
@@ -112,7 +48,7 @@ such as status, commit tree and more.`,
 		}
 
 		if resp.IsSuccess() {
-			var response PullRequestResponse
+			var response api.PullRequests
 
 			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
