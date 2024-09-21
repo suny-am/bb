@@ -1,4 +1,4 @@
-package credentials
+package keyring
 
 import (
 	"encoding/base64"
