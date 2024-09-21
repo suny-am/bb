@@ -27,12 +27,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/commit"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/permission"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr"
+	"github.com/suny-am/bitbucket-cli/lib/keyring"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/user"
-	"github.com/suny-am/bitbucket-cli/pkg/lib/keyring"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
 )
 
@@ -81,9 +77,5 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 
-	rootCmd.AddCommand(commit.CommitCmd)
-	rootCmd.AddCommand(permission.PermissionCmd)
-	rootCmd.AddCommand(pr.PrCmd)
 	rootCmd.AddCommand(repo.RepoCmd)
-	rootCmd.AddCommand(user.UserCmd)
 }
