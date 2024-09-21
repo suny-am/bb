@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd"
+	"github.com/suny-am/bitbucket-cli/pkg/types"
 )
 
 type (
@@ -21,9 +21,7 @@ type (
 	}
 )
 
-var Credentials = cmd.Credentials
-
-var userCmd = &cobra.Command{
+var UserCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Bitbucket user information",
 	Long: `Use this command to get general information about one or more
@@ -33,7 +31,11 @@ Bitbucket users.`,
 		userId, _ := cmd.Flags().GetString("userId")
 		email, _ := cmd.Flags().GetString("email")
 
-		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
+		cmd.Root().PreRun(cmd, nil)
+
+		credentials := cmd.Context().Value(types.CredentialsKey{})
+
+		authHeaderData := fmt.Sprintf("Basic %s", credentials)
 
 		client := resty.New()
 
@@ -82,8 +84,6 @@ Bitbucket users.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(userCmd)
-
-	userCmd.Flags().StringP("user", "u", "", "Target user Bitbucket account ID/UUID")
-	userCmd.Flags().StringP("email", "e", "", "Targer user email registered on Bitbucket")
+	UserCmd.Flags().StringP("user", "u", "", "Target user Bitbucket account ID/UUID")
+	UserCmd.Flags().StringP("email", "e", "", "Targer user email registered on Bitbucket")
 }

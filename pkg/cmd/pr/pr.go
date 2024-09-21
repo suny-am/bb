@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
 */
-package cmd
+package pr
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd"
+	"github.com/suny-am/bitbucket-cli/pkg/types"
 )
 
 type (
@@ -77,9 +77,7 @@ type (
 	}
 )
 
-var Credentials = cmd.Credentials
-
-var prCmd = &cobra.Command{
+var PrCmd = &cobra.Command{
 	Use:   "pr",
 	Short: "Pull Request information",
 	Long: `Get information for a pull request,
@@ -98,7 +96,10 @@ such as status, commit tree and more.`,
 
 		client := resty.New()
 
-		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
+		cmd.Root().PreRun(cmd, nil)
+		credentials := cmd.Context().Value(types.CredentialsKey{})
+
+		authHeaderData := fmt.Sprintf("Basic %s", credentials)
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
@@ -133,12 +134,10 @@ such as status, commit tree and more.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(prCmd)
+	PrCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	PrCmd.Flags().StringP("repository", "r", "", "Target repository")
+	PrCmd.Flags().StringP("commit", "c", "", "commit for the target PR(s)")
 
-	prCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	prCmd.Flags().StringP("repository", "r", "", "Target repository")
-	prCmd.Flags().StringP("commit", "c", "", "commit for the target PR(s)")
-
-	prCmd.MarkFlagRequired("workspace")
-	prCmd.MarkFlagRequired("repository")
+	PrCmd.MarkFlagRequired("workspace")
+	PrCmd.MarkFlagRequired("repository")
 }
