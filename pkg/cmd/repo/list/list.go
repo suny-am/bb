@@ -24,10 +24,26 @@ package list
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/lib/iostreams"
+	tablePrinter "github.com/suny-am/bitbucket-cli/pkg/lib/tableprinter"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
+)
+
+type (
+	RepoListResponse struct {
+		Values []Repository
+	}
+	Repository struct {
+		Created_On  string
+		Updated_On  string
+		Description string
+		Full_Name   string
+		Is_Private  bool
+	}
 )
 
 // listCmd represents the list command
@@ -79,20 +95,27 @@ var ListCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var data map[string]interface{}
+			var response RepoListResponse
 
-			if err := json.Unmarshal([]byte(resp.String()), &data); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)
 			}
 
-			output, err := json.MarshalIndent(data["values"], "", "  ")
+			tp := tablePrinter.New(os.Stdout, true, 200) // TBD pass dynamic opts
 
-			if err != nil {
-				fmt.Println(err)
+			cs := *iostreams.NewColorScheme(true, true, true)
+
+			headers := []string{"NAME", "INFO", "UPDATED"}
+			tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
+			for i := range response.Values {
+				repo := response.Values[i]
+				tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
+				tp.Field("public", tablePrinter.WithColor(cs.Gray))
+				tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
+				tp.EndRow()
 			}
 
-			fmt.Println(string(output))
-
+			tp.Render()
 		}
 	},
 }
