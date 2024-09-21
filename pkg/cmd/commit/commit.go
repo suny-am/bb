@@ -9,10 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd"
 )
-
-var Credentials = cmd.Credentials
 
 type (
 	CommitResponse struct {
@@ -41,7 +38,7 @@ type (
 )
 
 // commitCmd represents the commit command
-var commitCmd = &cobra.Command{
+var CommitCmd = &cobra.Command{
 	Use:   "commit",
 	Short: "Bitbucket commit information",
 	Long: `Use this command to get commit activity information
@@ -55,7 +52,7 @@ var commitCmd = &cobra.Command{
 
 		endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", workspace, repository, commit)
 
-		authHeaderData := fmt.Sprintf("Basic %s", Credentials)
+		authHeaderData := fmt.Sprintf("Basic %s", "test")
 
 		resp, err := client.R().
 			SetHeader("Authorization", authHeaderData).
@@ -81,13 +78,11 @@ var commitCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(commitCmd)
+	CommitCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	CommitCmd.Flags().StringP("repository", "r", "", "Repository for the commit")
+	CommitCmd.Flags().StringP("commit", "c", "", "Target commit")
 
-	commitCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	commitCmd.Flags().StringP("repository", "r", "", "Repository for the commit")
-	commitCmd.Flags().StringP("commit", "c", "", "Target commit")
-
-	commitCmd.MarkFlagRequired("workspace")
-	commitCmd.MarkFlagRequired("repository")
-	commitCmd.MarkFlagRequired("commit")
+	CommitCmd.MarkFlagRequired("workspace")
+	CommitCmd.MarkFlagRequired("repository")
+	CommitCmd.MarkFlagRequired("commit")
 }
