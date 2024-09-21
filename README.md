@@ -132,10 +132,24 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] TBD 1
-- [ ] TBD 2
-- [ ] TBD 3
-  - [ ] Nested TBD
+- [ ] Core commands
+  - [x] Root 
+  - [ ] Auth
+  - [ ] Browse
+  - [ ] Commit
+  - [ ] Issue
+  - [ ] PR
+  - [ ] Project
+  - [ ] Release
+  - [ ] Repo
+  - [ ] Snippet
+  - [ ] User
+  - [ ] Workspace
+- [ ] Alias commands
+- [ ] Additional commands
+- [ ] Help Topics
+- [ ] Flags
+- [ ] Examples
 
 See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
 
