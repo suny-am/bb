@@ -9,16 +9,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
-)
-
-type (
-	UserResponse struct {
-		Type         string
-		Created_On   string
-		Display_Name string
-		Uuid         string
-	}
 )
 
 var UserCmd = &cobra.Command{
@@ -68,17 +60,17 @@ Bitbucket users.`,
 		}
 
 		if resp.IsSuccess() {
-			var response UserResponse
+			var user api.User
 
-			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &user); err != nil {
 				fmt.Println(err)
 			}
 
 			fmt.Printf("Display name: %s\nType: %s\nUUID: %s\nCreation time: %s",
-				response.Display_Name,
-				response.Type,
-				response.Uuid,
-				response.Created_On)
+				user.Display_Name,
+				user.Type,
+				user.Uuid,
+				user.Created_On)
 		}
 	},
 }

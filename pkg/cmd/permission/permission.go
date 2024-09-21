@@ -9,36 +9,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
-)
-
-type (
-	PermissionResponse struct {
-		Values []Permission
-	}
-
-	Permission struct {
-		Permission string
-		Type       string
-		User       User
-		Repository Repository
-	}
-
-	User struct {
-		AccountId    string
-		Display_Name string
-		Nickname     string
-		Type         string
-		Uuid         string
-	}
-
-	Repository struct {
-		Full_Name string
-		Name      string
-		DataType  string
-		Uuid      string
-		Type      string
-	}
 )
 
 // PermissionCmd represents the permission command
@@ -68,7 +40,7 @@ var PermissionCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var response PermissionResponse
+			var response api.Permissions
 
 			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
 				fmt.Println(err)

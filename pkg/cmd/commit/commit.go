@@ -9,32 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-)
-
-type (
-	CommitResponse struct {
-		Author  Author
-		Date    string
-		Hash    string
-		Message string
-		Parents []ParentCommit
-	}
-	Author struct {
-		Raw  string
-		Type string
-		User User
-	}
-	User struct {
-		Account_Id   string
-		Display_Name string
-		Nickname     string
-		Type         string
-		Uuid         string
-	}
-	ParentCommit struct {
-		Hash string
-		Type string
-	}
+	"github.com/suny-am/bitbucket-cli/api"
 )
 
 // commitCmd represents the commit command
@@ -65,14 +40,14 @@ var CommitCmd = &cobra.Command{
 		}
 
 		if resp.IsSuccess() {
-			var response CommitResponse
+			var commit api.Commit
 
-			if err := json.Unmarshal([]byte(resp.String()), &response); err != nil {
+			if err := json.Unmarshal([]byte(resp.String()), &commit); err != nil {
 				fmt.Println(err)
 			}
 
 			fmt.Printf("Author: %s\n",
-				response.Author.User.Display_Name)
+				commit.Author.User.Display_Name)
 		}
 	},
 }
