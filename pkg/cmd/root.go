@@ -32,8 +32,8 @@ import (
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/user"
+	credentials "github.com/suny-am/bitbucket-cli/pkg/lib/credentials"
 	"github.com/suny-am/bitbucket-cli/pkg/types"
-	credentials "github.com/suny-am/bitbucket-cli/pkg/utils"
 )
 
 // rootCmd represents the base command when called without any subcommands
