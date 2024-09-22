@@ -27,16 +27,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/commit"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/permission"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/user"
-	credentials "github.com/suny-am/bitbucket-cli/pkg/lib/credentials"
-	"github.com/suny-am/bitbucket-cli/pkg/types"
+	"github.com/suny-am/bitbucket-cli/pkg/internal/keyring"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "bitbucket-cli",
 	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
@@ -46,7 +40,7 @@ Bitbucket Cloud resources.
 Fetch personal commit history, workspace statistics, branch activity,
 Pull Request information and much more, all from your terminal.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		CredProvider := credentials.NewCredentialsProvider()
+		CredProvider := keyring.NewCredentialsProvider()
 		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
@@ -54,16 +48,11 @@ Pull Request information and much more, all from your terminal.`,
 			os.Exit(1)
 		}
 
-		ctx := context.WithValue(cmd.Context(), types.CredentialsKey{}, credentials)
+		ctx := context.WithValue(cmd.Context(), keyring.CredentialsKey{}, credentials)
 		cmd.SetContext(ctx)
 	},
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) {},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -72,18 +61,5 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bitbucket-cli.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-
-	rootCmd.AddCommand(commit.CommitCmd)
-	rootCmd.AddCommand(permission.PermissionCmd)
-	rootCmd.AddCommand(pr.PrCmd)
 	rootCmd.AddCommand(repo.RepoCmd)
-	rootCmd.AddCommand(user.UserCmd)
 }

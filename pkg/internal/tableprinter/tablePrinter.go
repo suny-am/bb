@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/suny-am/bitbucket-cli/pkg/lib/text"
+	"github.com/suny-am/bitbucket-cli/pkg/internal/text"
 )
 
 type fieldOption func(*tableField)
