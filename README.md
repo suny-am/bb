@@ -134,22 +134,35 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [ ] Core commands
   - [x] Root 
-  - [ ] Auth
-  - [ ] Browse
-  - [ ] Commit
-  - [ ] Issue
-  - [ ] PR
-  - [ ] Project
-  - [ ] Release
-  - [ ] Repo
-  - [ ] Snippet
-  - [ ] User
   - [ ] Workspace
-- [ ] Alias commands
-- [ ] Additional commands
-- [ ] Help Topics
+  - [ ] Repository
+    - [ ] Branch restrictions    
+    - [ ] Branching model    
+    - [ ] Commits
+    - [ ] Deploy Keys
+    - [ ] Downloads
+    - [ ] Environments
+    - [ ] Repositories
+    - [ ] Pullrequests
+    - [ ] Refs
+    - [ ] Reports
+    - [ ] Source
+  - [ ] Project
+    - [ ] Branch restrictions    
+    - [ ] Branching model    
+    - [ ] Deploy Keys
+    - [ ] Issue tracker
+    - [ ] Pipelines
+    - [ ] Projects
+  - [ ] User
+    - [ ] Pullrequests
+  - [ ] Snippets
 - [ ] Flags
-- [ ] Examples
+- [ ] Help Topics
+- [ ] Config
+- [ ] Auth
+- [ ] TBD
+
 
 See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
 
