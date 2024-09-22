@@ -12,17 +12,18 @@ import (
 
 func listRepos(opts *ListOptions) (*api.Repositories, error) {
 
-	// authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 
 	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
 	if opts.workspace != "" {
 		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.workspace)
 
-		// --repository requires --workspace
-		if opts.repository != "" {
-			endpoint = fmt.Sprintf("%s/%s", endpoint, opts.repository)
-		}
+	}
+
+	// --repository requires --workspace
+	if opts.repository != "" {
+		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.repository)
 	}
 
 	client := &http.Client{}
@@ -33,12 +34,12 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 		return nil, err
 	}
 
-	// req.Header.Add("Authorize", authHeaderValue)
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", authHeaderValue)
 
-	query := req.URL.Query()
-	if opts.limit != nil {
-		query.Add("size", strconv.Itoa(*opts.limit))
+	if opts.limit > 0 {
+		query := req.URL.Query()
+		query.Add("pagelen", strconv.Itoa(opts.limit))
 		req.URL.RawQuery = query.Encode()
 	}
 
@@ -48,7 +49,8 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 		return nil, err
 	}
 
-	var response api.Repositories
+	var listResponse api.Repositories
+	var singleResponse api.Repository
 
 	body, err := io.ReadAll(resp.Body)
 
@@ -56,9 +58,16 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 		return nil, err
 	}
 
-	if err := json.Unmarshal([]byte(body), &response); err != nil {
-		return nil, err
+	if opts.repository == "" {
+		if err := json.Unmarshal([]byte(body), &listResponse); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := json.Unmarshal([]byte(body), &singleResponse); err != nil {
+			return nil, err
+		}
+		listResponse.Values = append(listResponse.Values, singleResponse)
 	}
 
-	return &response, nil
+	return &listResponse, nil
 }

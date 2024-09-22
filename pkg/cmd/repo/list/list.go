@@ -35,7 +35,7 @@ type ListOptions struct {
 	repository  string
 	workspace   string
 	credentials string
-	limit       *int
+	limit       int
 }
 
 var opts ListOptions
@@ -47,15 +47,7 @@ var ListCmd = &cobra.Command{
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		opts.workspace, _ = cmd.Flags().GetString("workspace")
-		opts.repository, _ = cmd.Flags().GetString("repository")
-		limit, err := cmd.Flags().GetInt("limit")
-
-		if err == nil {
-			*opts.limit = limit
-		}
-
-		if opts.limit != nil && *opts.limit < 1 {
+		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
 
@@ -77,7 +69,11 @@ var ListCmd = &cobra.Command{
 		for i := range resp.Values {
 			repo := resp.Values[i]
 			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
-			tp.Field("public", tablePrinter.WithColor(cs.Gray))
+			if repo.Is_Private {
+				tp.Field("private", tablePrinter.WithColor(cs.Gray))
+			} else {
+				tp.Field("public", tablePrinter.WithColor(cs.Yellow))
+			}
 			tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
 			tp.EndRow()
 		}
@@ -89,7 +85,7 @@ var ListCmd = &cobra.Command{
 }
 
 func init() {
-	ListCmd.Flags().StringP("workspace", "w", "", "Target workspace")
-	ListCmd.Flags().StringP("repo", "r", "", "Target repository")
-	ListCmd.Flags().StringP("limit", "l", "", "Item limit")
+	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
+	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 }
