@@ -22,132 +22,60 @@ THE SOFTWARE.
 package list
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
+	"errors"
 	"os"
-	"strconv"
-	"time"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/api"
-	"github.com/suny-am/bitbucket-cli/internal/bb"
-	"github.com/suny-am/bitbucket-cli/lib/iostreams"
-	tablePrinter "github.com/suny-am/bitbucket-cli/lib/tableprinter"
-	cmdUtil "github.com/suny-am/bitbucket-cli/pkg/cmdutil"
+	"github.com/suny-am/bitbucket-cli/pkg/internal/iostreams"
+	"github.com/suny-am/bitbucket-cli/pkg/internal/keyring"
+	tablePrinter "github.com/suny-am/bitbucket-cli/pkg/internal/tableprinter"
 )
 
 type ListOptions struct {
-	HttpClient func() (*http.Client, error)
-	Config     func() (bb.Config, error)
-	IO         *iostreams.IOStreams
-
-	Limit int
-	Owner string
-
-	Visibility string
-
-	Now func() time.Time
+	repository  string
+	workspace   string
+	credentials string
+	limit       *int
 }
 
-func NewCmdList(f *cmdUtil.Factory, runF func(*ListOptions) error) *cobra.Command {
-	opts := ListOptions{
-		IO:         f.IOStreams,
-		Config:     f.Config,
-		HttpClient: f.HttpClient,
-		Now:        time.Now,
-	}
+var opts ListOptions
 
-	var (
-		flagPublic  bool
-		flagPrivate bool
-	)
+var ListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List repositories",
+	Long:  `List one or more personal and/or workspace repositories`,
 
-	cmd := &cobra.Command{
-		Use:   "list",
-		Short: "List repositories",
-		Long:  `List one or more personal and/or workspace repositories`,
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.Limit < 1 {
-				return cmdUtil.FlagErrorf("invalid limit: %v", opts.Limit)
-			}
+		opts.workspace, _ = cmd.Flags().GetString("workspace")
+		opts.repository, _ = cmd.Flags().GetString("repository")
+		limit, err := cmd.Flags().GetInt("limit")
 
-			if err := cmdUtil.MutuallyExclusive("specify only one of `--public`, `--private`, or `--visibility`", flagPublic, flagPrivate, opts.Visibility != ""); err != nil {
-				return err
-			}
-
-			if flagPrivate {
-				opts.Visibility = "private"
-			} else if flagPublic {
-				opts.Visibility = "public"
-			}
-
-			if len(args) > 0 {
-				opts.Owner = args[0]
-			}
-
-			if runF != nil {
-				return runF(&opts)
-			}
-
-			return listRun(&opts)
-
-		},
-	}
-
-	cmd.Flags().IntVarP(&opts.Limit, "limit", "L", 30, "Maximum number of repositories to list")
-	cmdUtil.StringEnumFlag(cmd, &opts.Visibility, "visibility", "", "", []string{"public", "private", "internal"}, "Filter by repository visibility")
-
-	cmd.Flags().BoolVar(&flagPrivate, "private", false, "Show only private repositories")
-	cmd.Flags().BoolVar(&flagPublic, "public", false, "Show only public repositories")
-	_ = cmd.Flags().MarkDeprecated("public", "use `--visibility=public` instead")
-	_ = cmd.Flags().MarkDeprecated("private", "use `--visibility=private` instead")
-
-	return cmd
-}
-
-func listRun(opts *ListOptions) error {
-
-	limit := opts.Limit
-
-	credentials := "test"
-
-	authHeaderData := fmt.Sprintf("Basic %s", credentials)
-
-	client := resty.New()
-
-	// TBD add workspace as argument
-
-	endpoint := "https://api.bitbucket.org/2.0/repositories"
-
-	resp, err := client.R().
-		SetHeader("Authorization", authHeaderData).
-		SetHeader("Accept", "application/json").
-		SetQueryParam("pagelen", strconv.Itoa(limit)).
-		EnableTrace().
-		Get(endpoint)
-
-	if resp.IsError() {
-		fmt.Println(err.Error())
-	}
-
-	if resp.IsSuccess() {
-		var repositories api.Repositories
-
-		if err := json.Unmarshal([]byte(resp.String()), &repositories); err != nil {
-			fmt.Println(err)
+		if err == nil {
+			*opts.limit = limit
 		}
 
-		tp := tablePrinter.New(os.Stdout, true, 200) // TBD pass dynamic opts
+		if opts.limit != nil && *opts.limit < 1 {
+			return errors.New("limit cannot be negative or 0")
+		}
+
+		cmd.Root().PreRun(cmd, nil)
+		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+
+		resp, err := listRepos(&opts)
+
+		if err != nil {
+			return err
+		}
+
+		tp := tablePrinter.New(os.Stdout, true, 500)
 
 		cs := *iostreams.NewColorScheme(true, true, true)
 
 		headers := []string{"NAME", "INFO", "UPDATED"}
 		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range repositories.Values {
-			repo := repositories.Values[i]
+		for i := range resp.Values {
+			repo := resp.Values[i]
 			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
 			tp.Field("public", tablePrinter.WithColor(cs.Gray))
 			tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
@@ -155,6 +83,13 @@ func listRun(opts *ListOptions) error {
 		}
 
 		tp.Render()
-	}
-	return nil
+
+		return nil
+	},
+}
+
+func init() {
+	ListCmd.Flags().StringP("workspace", "w", "", "Target workspace")
+	ListCmd.Flags().StringP("repo", "r", "", "Target repository")
+	ListCmd.Flags().StringP("limit", "l", "", "Item limit")
 }
