@@ -1,7 +1,7 @@
 package api
 
 type (
-	RepoListResponse struct {
+	Repositories struct {
 		Values []Repository
 	}
 	Repository struct {
