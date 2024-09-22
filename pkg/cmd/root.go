@@ -27,8 +27,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/internal/keyring"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
-	"github.com/suny-am/bitbucket-cli/pkg/internal/keyring"
 )
 
 var rootCmd = &cobra.Command{

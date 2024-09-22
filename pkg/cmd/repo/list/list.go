@@ -26,9 +26,9 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/internal/iostreams"
-	"github.com/suny-am/bitbucket-cli/pkg/internal/keyring"
-	tablePrinter "github.com/suny-am/bitbucket-cli/pkg/internal/tableprinter"
+	"github.com/suny-am/bitbucket-cli/internal/iostreams"
+	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
 type ListOptions struct {

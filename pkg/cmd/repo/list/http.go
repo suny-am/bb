@@ -10,7 +10,7 @@ import (
 	"github.com/suny-am/bitbucket-cli/api"
 )
 
-func listRepos(opts *ListOptions) (*api.RepoListResponse, error) {
+func listRepos(opts *ListOptions) (*api.Repositories, error) {
 
 	// authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 
@@ -48,9 +48,7 @@ func listRepos(opts *ListOptions) (*api.RepoListResponse, error) {
 		return nil, err
 	}
 
-	var response api.RepoListResponse
-
-	fmt.Println(resp.Body)
+	var response api.Repositories
 
 	body, err := io.ReadAll(resp.Body)
 

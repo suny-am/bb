@@ -23,6 +23,7 @@ package repo
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/list"
 )
 
 var RepoCmd = &cobra.Command{
@@ -30,4 +31,8 @@ var RepoCmd = &cobra.Command{
 	Short: "Bitbucket repository information",
 	Long: `Use this command to get general information about public 
 or workspace repositories.`,
+}
+
+func init() {
+	RepoCmd.AddCommand(list.ListCmd)
 }
