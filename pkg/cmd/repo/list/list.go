@@ -60,7 +60,6 @@ var ListCmd = &cobra.Command{
 		}
 
 		tp := tablePrinter.New(os.Stdout, true, 500)
-
 		cs := *iostreams.NewColorScheme(true, true, true)
 
 		headers := []string{"NAME", "INFO", "UPDATED"}

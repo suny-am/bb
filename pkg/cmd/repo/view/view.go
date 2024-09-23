@@ -24,9 +24,14 @@ package view
 import (
 	"errors"
 	"fmt"
+	"os"
+	"reflect"
 
+	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
 type ViewOptions struct {
@@ -61,19 +66,48 @@ var ViewCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Name: %s\n", repo.Full_Name)
-		fmt.Printf("Description: %s\n", repo.Description)
-		fmt.Printf("Created: %s\n", repo.Created_On)
-		fmt.Printf("Updated: %s\n", repo.Updated_On)
-		fmt.Printf("Private: %v\n", repo.Is_Private)
-		fmt.Printf("Fork policy: %v\n", repo.Fork_Policy)
-		fmt.Printf("Wiki: %v\n", repo.Has_Wiki)
-		fmt.Printf("Language: %v\n", repo.Language)
-		fmt.Printf("Owner: %s [%s]\n", repo.Owner.Display_Name, repo.Owner.Type)
-		fmt.Printf("Size (MB): %v\n", repo.Size/1000/1000)
-		fmt.Printf("Project: %v\n", repo.Project.Name)
-		fmt.Printf("Main branch: %v\n", repo.Mainbranch.Name)
-		fmt.Printf("Readme: %v\n", repo.Readme)
+		markdown := markdown.Render(repo.Readme, 80, 6)
+
+		fmt.Println(string(markdown))
+
+		tp := tablePrinter.New(os.Stdout, true, 200)
+		cs := *iostreams.NewColorScheme(true, true, true)
+
+		repoVal := reflect.ValueOf(*repo)
+		vType := repoVal.Type()
+
+		for i := 0; i < repoVal.NumField(); i++ {
+			if vType.Field(i).Name == "Readme" {
+				continue
+			}
+			tp.Field(vType.Field(i).Name, tablePrinter.WithColor(cs.Bold))
+			v := repoVal.Field(i)
+			switch v.Kind() {
+			case reflect.Bool:
+				tp.Field(fmt.Sprintf("%v", v))
+			case reflect.String:
+				if v.String() == "" {
+					tp.Field("NA", tablePrinter.WithColor(cs.Red))
+				} else {
+					tp.Field(v.String())
+				}
+			case reflect.Int:
+				tp.Field(fmt.Sprintf("%d", v.Int()))
+			case reflect.Struct:
+				switch vType.Field(i).Name {
+				case "Owner":
+					tp.Field(repo.Owner.Display_Name)
+				case "Mainbranch":
+					tp.Field(repo.Mainbranch.Name)
+				case "Project":
+					tp.Field(repo.Project.Name)
+				}
+			}
+
+			tp.EndRow()
+		}
+
+		tp.Render()
 
 		return nil
 	},
