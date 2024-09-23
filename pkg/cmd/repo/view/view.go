@@ -19,71 +19,67 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package list
+package view
 
 import (
 	"errors"
-	"os"
+	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
-type ListOptions struct {
+type ViewOptions struct {
 	repository  string
 	workspace   string
 	credentials string
-	limit       int
 }
 
-var opts ListOptions
+var opts ViewOptions
 
-var ListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List repositories",
-	Long:  `List one or more personal and/or workspace repositories`,
+var ViewCmd = &cobra.Command{
+	Use:   "view",
+	Short: "View a repository",
+	Long:  `View a repository in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		if opts.limit < 0 {
-			return errors.New("limit cannot be negative or 0")
+		if len(args) < 1 {
+			return errors.New("<repository> argument is required")
 		}
 
+		if len(args) > 1 {
+			return errors.New("only one <repository> argument is allowed")
+		}
+
+		opts.repository = args[0]
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		resp, err := listRepos(&opts)
+		repo, err := viewRepo(&opts)
 
 		if err != nil {
 			return err
 		}
 
-		tp := tablePrinter.New(os.Stdout, true, 500)
-
-		cs := *iostreams.NewColorScheme(true, true, true)
-
-		headers := []string{"NAME", "INFO", "UPDATED"}
-		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range resp.Values {
-			repo := resp.Values[i]
-			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
-			if repo.Is_Private {
-				tp.Field("private", tablePrinter.WithColor(cs.Gray))
-			} else {
-				tp.Field("public", tablePrinter.WithColor(cs.Yellow))
-			}
-			tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
-			tp.EndRow()
-		}
-
-		tp.Render()
+		fmt.Printf("Name: %s\n", repo.Full_Name)
+		fmt.Printf("Description: %s\n", repo.Description)
+		fmt.Printf("Created: %s\n", repo.Created_On)
+		fmt.Printf("Updated: %s\n", repo.Updated_On)
+		fmt.Printf("Private: %v\n", repo.Is_Private)
+		fmt.Printf("Fork policy: %v\n", repo.Fork_Policy)
+		fmt.Printf("Wiki: %v\n", repo.Has_Wiki)
+		fmt.Printf("Language: %v\n", repo.Language)
+		fmt.Printf("Owner: %s [%s]\n", repo.Owner.Display_Name, repo.Owner.Type)
+		fmt.Printf("Size (MB): %v\n", repo.Size/1000/1000)
+		fmt.Printf("Project: %v\n", repo.Project.Name)
+		fmt.Printf("Main branch: %v\n", repo.Mainbranch.Name)
+		fmt.Printf("Readme: %v\n", repo.Readme)
 
 		return nil
 	},
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
-	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
+	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	ViewCmd.MarkFlagRequired("workspace")
 }
