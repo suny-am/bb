@@ -27,10 +27,11 @@ import (
 	"os"
 	"reflect"
 
-	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	"github.com/suny-am/bitbucket-cli/internal/markdown"
 	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
@@ -66,48 +67,9 @@ var ViewCmd = &cobra.Command{
 			return err
 		}
 
-		markdown := markdown.Render(repo.Readme, 80, 6)
+		markdown.Render(repo.Readme)
 
-		fmt.Println(string(markdown))
-
-		tp := tablePrinter.New(os.Stdout, true, 200)
-		cs := *iostreams.NewColorScheme(true, true, true)
-
-		repoVal := reflect.ValueOf(*repo)
-		vType := repoVal.Type()
-
-		for i := 0; i < repoVal.NumField(); i++ {
-			if vType.Field(i).Name == "Readme" {
-				continue
-			}
-			tp.Field(vType.Field(i).Name, tablePrinter.WithColor(cs.Bold))
-			v := repoVal.Field(i)
-			switch v.Kind() {
-			case reflect.Bool:
-				tp.Field(fmt.Sprintf("%v", v))
-			case reflect.String:
-				if v.String() == "" {
-					tp.Field("NA", tablePrinter.WithColor(cs.Red))
-				} else {
-					tp.Field(v.String())
-				}
-			case reflect.Int:
-				tp.Field(fmt.Sprintf("%d", v.Int()))
-			case reflect.Struct:
-				switch vType.Field(i).Name {
-				case "Owner":
-					tp.Field(repo.Owner.Display_Name)
-				case "Mainbranch":
-					tp.Field(repo.Mainbranch.Name)
-				case "Project":
-					tp.Field(repo.Project.Name)
-				}
-			}
-
-			tp.EndRow()
-		}
-
-		tp.Render()
+		renderFields(*repo)
 
 		return nil
 	},
@@ -116,4 +78,46 @@ var ViewCmd = &cobra.Command{
 func init() {
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ViewCmd.MarkFlagRequired("workspace")
+}
+
+func renderFields(repo api.Repository) {
+
+	tp := tablePrinter.New(os.Stdout, true, 200)
+	cs := *iostreams.NewColorScheme(true, true, true)
+
+	repoVal := reflect.ValueOf(repo)
+	vType := repoVal.Type()
+
+	for i := 0; i < repoVal.NumField(); i++ {
+		if vType.Field(i).Name == "Readme" {
+			continue
+		}
+		tp.Field(vType.Field(i).Name, tablePrinter.WithColor(cs.Bold))
+		v := repoVal.Field(i)
+		switch v.Kind() {
+		case reflect.Bool:
+			tp.Field(fmt.Sprintf("%v", v))
+		case reflect.String:
+			if v.String() == "" {
+				tp.Field("NA", tablePrinter.WithColor(cs.Red))
+			} else {
+				tp.Field(v.String())
+			}
+		case reflect.Int:
+			tp.Field(fmt.Sprintf("%d", v.Int()))
+		case reflect.Struct:
+			switch vType.Field(i).Name {
+			case "Owner":
+				tp.Field(repo.Owner.Display_Name)
+			case "Mainbranch":
+				tp.Field(repo.Mainbranch.Name)
+			case "Project":
+				tp.Field(repo.Project.Name)
+			}
+		}
+
+		tp.EndRow()
+	}
+
+	tp.Render()
 }
