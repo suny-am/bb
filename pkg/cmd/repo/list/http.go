@@ -18,12 +18,6 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 
 	if opts.workspace != "" {
 		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.workspace)
-
-	}
-
-	// --repository requires --workspace
-	if opts.repository != "" {
-		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.repository)
 	}
 
 	client := &http.Client{}
@@ -49,8 +43,7 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 		return nil, err
 	}
 
-	var listResponse api.Repositories
-	var singleResponse api.Repository
+	var repositories api.Repositories
 
 	body, err := io.ReadAll(resp.Body)
 
@@ -58,16 +51,9 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 		return nil, err
 	}
 
-	if opts.repository == "" {
-		if err := json.Unmarshal([]byte(body), &listResponse); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := json.Unmarshal([]byte(body), &singleResponse); err != nil {
-			return nil, err
-		}
-		listResponse.Values = append(listResponse.Values, singleResponse)
+	if err := json.Unmarshal([]byte(body), &repositories); err != nil {
+		return nil, err
 	}
 
-	return &listResponse, nil
+	return &repositories, nil
 }

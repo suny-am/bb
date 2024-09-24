@@ -51,7 +51,6 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		cmd.Root().PreRun(cmd, nil)
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
 		resp, err := listRepos(&opts)
@@ -61,7 +60,6 @@ var ListCmd = &cobra.Command{
 		}
 
 		tp := tablePrinter.New(os.Stdout, true, 500)
-
 		cs := *iostreams.NewColorScheme(true, true, true)
 
 		headers := []string{"NAME", "INFO", "UPDATED"}
@@ -86,6 +84,5 @@ var ListCmd = &cobra.Command{
 
 func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
-	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 }

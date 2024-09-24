@@ -23,7 +23,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -39,17 +38,17 @@ Bitbucket Cloud resources.
 
 Fetch personal commit history, workspace statistics, branch activity,
 Pull Request information and much more, all from your terminal.`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		CredProvider := keyring.NewCredentialsProvider()
 		credentials, err := CredProvider.GetCredentials()
 
 		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
+			return err
 		}
 
 		ctx := context.WithValue(cmd.Context(), keyring.CredentialsKey{}, credentials)
 		cmd.SetContext(ctx)
+		return nil
 	},
 }
 

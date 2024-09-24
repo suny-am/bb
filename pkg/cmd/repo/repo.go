@@ -24,6 +24,7 @@ package repo
 import (
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/list"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view"
 )
 
 var RepoCmd = &cobra.Command{
@@ -35,4 +36,5 @@ or workspace repositories.`,
 
 func init() {
 	RepoCmd.AddCommand(list.ListCmd)
+	RepoCmd.AddCommand(view.ViewCmd)
 }
