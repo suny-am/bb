@@ -33,7 +33,6 @@ import (
 func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-
 	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, opts.repository)
 
 	client := &http.Client{}
@@ -77,5 +76,4 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 	}
 
 	return &repository, nil
-
 }

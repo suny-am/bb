@@ -53,7 +53,7 @@ var ListCmd = &cobra.Command{
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		resp, err := listRepos(&opts)
+		repos, err := listRepos(&opts)
 
 		if err != nil {
 			return err
@@ -64,8 +64,8 @@ var ListCmd = &cobra.Command{
 
 		headers := []string{"NAME", "INFO", "UPDATED"}
 		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range resp.Values {
-			repo := resp.Values[i]
+		for i := range repos.Values {
+			repo := repos.Values[i]
 			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
 			if repo.Is_Private {
 				tp.Field("private", tablePrinter.WithColor(cs.Gray))

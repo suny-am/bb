@@ -33,6 +33,7 @@ import (
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
 	"github.com/suny-am/bitbucket-cli/internal/markdown"
 	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view/forks"
 )
 
 type ViewOptions struct {
@@ -76,6 +77,8 @@ var ViewCmd = &cobra.Command{
 }
 
 func init() {
+	ViewCmd.AddCommand(forks.ForksCmd)
+
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ViewCmd.MarkFlagRequired("workspace")
 }
