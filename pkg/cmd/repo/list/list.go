@@ -24,13 +24,12 @@ package list
 import (
 	"errors"
 	"os"
-	"strings"
-	"unicode"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
 	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
+	text "github.com/suny-am/bitbucket-cli/internal/text"
 )
 
 type ListOptions struct {
@@ -68,10 +67,9 @@ var ListCmd = &cobra.Command{
 		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
 		for i := range repos.Values {
 			repo := repos.Values[i]
-
 			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
 			if repo.Description != "" {
-				tp.Field(truncateText(formatCR(repo.Description), 50))
+				tp.Field(text.TruncateSimple(text.FormatCR(repo.Description), 50))
 			} else {
 				tp.Field("NA", tablePrinter.WithColor(cs.RedBold))
 			}
@@ -94,26 +92,4 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
-}
-
-func formatCR(text string) string {
-	split := strings.Split(text, "\r\n")
-	return strings.Join(split, " ")
-}
-
-func truncateText(text string, max int) string {
-	lastSpaceIdx := -1
-	len := 0
-	for i, r := range text {
-		if unicode.IsSpace(r) {
-			lastSpaceIdx = i
-		}
-		len++
-		if len >= max {
-			if lastSpaceIdx != -1 {
-				return text[:lastSpaceIdx] + "..."
-			}
-		}
-	}
-	return text
 }

@@ -2,6 +2,7 @@ package text
 
 import (
 	"strings"
+	"unicode"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/truncate"
@@ -37,4 +38,26 @@ func PadRight(maxWidth int, s string) string {
 		s += strings.Repeat(" ", padWidth)
 	}
 	return s
+}
+
+func TruncateSimple(text string, max int) string {
+	lastSpaceIdx := -1
+	len := 0
+	for i, r := range text {
+		if unicode.IsSpace(r) {
+			lastSpaceIdx = i
+		}
+		len++
+		if len >= max {
+			if lastSpaceIdx != -1 {
+				return text[:lastSpaceIdx] + "..."
+			}
+		}
+	}
+	return text
+}
+
+func FormatCR(text string) string {
+	split := strings.Split(text, "\r\n")
+	return strings.Join(split, " ")
 }
