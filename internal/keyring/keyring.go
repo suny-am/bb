@@ -23,11 +23,11 @@ type EnvVarProvider struct{}
 func (p *OXSKeyChainProvider) GetCredentials() (string, error) {
 
 	var configFilePath string
-	home, empty := os.LookupEnv("HOME")
+	home, homeFound := os.LookupEnv("HOME")
 
-	if empty {
-		pathString, empty := os.LookupEnv("PATH")
-		if empty {
+	if !homeFound {
+		pathString, pathFound := os.LookupEnv("PATH")
+		if !pathFound {
 			return "", errors.New("no system $PATH found")
 		}
 		paths := strings.Split(pathString, ":")
