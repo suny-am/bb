@@ -24,6 +24,8 @@ package list
 import (
 	"errors"
 	"os"
+	"strings"
+	"unicode"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/internal/iostreams"
@@ -62,11 +64,17 @@ var ListCmd = &cobra.Command{
 		tp := tablePrinter.New(os.Stdout, true, 500)
 		cs := *iostreams.NewColorScheme(true, true, true)
 
-		headers := []string{"NAME", "INFO", "UPDATED"}
+		headers := []string{"NAME", "DESCRIPTION", "VISIBILITY", "UPDATED"}
 		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
 		for i := range repos.Values {
 			repo := repos.Values[i]
+
 			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
+			if repo.Description != "" {
+				tp.Field(truncateText(formatCR(repo.Description), 50))
+			} else {
+				tp.Field("NA", tablePrinter.WithColor(cs.RedBold))
+			}
 			if repo.Is_Private {
 				tp.Field("private", tablePrinter.WithColor(cs.Gray))
 			} else {
@@ -86,4 +94,26 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
+}
+
+func formatCR(text string) string {
+	split := strings.Split(text, "\r\n")
+	return strings.Join(split, " ")
+}
+
+func truncateText(text string, max int) string {
+	lastSpaceIdx := -1
+	len := 0
+	for i, r := range text {
+		if unicode.IsSpace(r) {
+			lastSpaceIdx = i
+		}
+		len++
+		if len >= max {
+			if lastSpaceIdx != -1 {
+				return text[:lastSpaceIdx] + "..."
+			}
+		}
+	}
+	return text
 }
