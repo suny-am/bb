@@ -2,7 +2,11 @@ package api
 
 type (
 	Repositories struct {
-		Values []Repository
+		Size     int
+		Page     int
+		Previous string
+		Next     string
+		Values   []Repository
 	}
 	Repository struct {
 		Description string

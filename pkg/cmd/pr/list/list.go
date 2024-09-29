@@ -24,6 +24,7 @@ package list
 import (
 	"errors"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/internal/iostreams"
@@ -31,19 +32,21 @@ import (
 	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
-type ListOptions struct {
-	credentials string
-	workspace   string
-	nameFilter  string
-	limit       int
+type PrListOptions struct {
+	credentials  string
+	workspace    string
+	repository   string
+	titleFilter  string
+	authorFilter string
+	limit        int
 }
 
-var opts ListOptions
+var opts PrListOptions
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List repositories",
-	Long:  `List one or more personal and/or workspace repositories`,
+	Short: "List pullrequests",
+	Long:  `List one or more public or workspace related pullrequests`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -53,7 +56,7 @@ var ListCmd = &cobra.Command{
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		repos, err := listRepos(&opts)
+		pullrequests, err := listPullrequests(&opts)
 
 		if err != nil {
 			return err
@@ -62,17 +65,15 @@ var ListCmd = &cobra.Command{
 		tp := tablePrinter.New(os.Stdout, true, 500)
 		cs := *iostreams.NewColorScheme(true, true, true)
 
-		headers := []string{"NAME", "INFO", "UPDATED"}
+		headers := []string{"TITLE", "AUTHOR", "COMMENTS", "TASKS", "UPDATED"}
 		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range repos.Values {
-			repo := repos.Values[i]
-			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
-			if repo.Is_Private {
-				tp.Field("private", tablePrinter.WithColor(cs.Gray))
-			} else {
-				tp.Field("public", tablePrinter.WithColor(cs.Yellow))
-			}
-			tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
+		for i := range pullrequests.Values {
+			pr := pullrequests.Values[i]
+			tp.Field(pr.Title, tablePrinter.WithColor(cs.Bold))
+			tp.Field(pr.Author.Display_Name)
+			tp.Field(strconv.Itoa(pr.Comment_Count))
+			tp.Field(strconv.Itoa(pr.Task_Count))
+			tp.Field(pr.Updated_On, tablePrinter.WithColor(cs.Gray))
 			tp.EndRow()
 		}
 
@@ -84,6 +85,11 @@ var ListCmd = &cobra.Command{
 
 func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
+	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
+	ListCmd.Flags().StringVarP(&opts.authorFilter, "author", "a", "", "Author name match filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
+
+	ListCmd.MarkFlagRequired("workspace")
+	ListCmd.MarkFlagRequired("repo")
 }

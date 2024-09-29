@@ -5,4 +5,5 @@ ENV APP_ENV=development
 COPY .cobra.yaml ~/.cobra.yaml
 
 RUN \
-    go install github.com/spf13/cobra-cli@latest
+    go install github.com/spf13/cobra-cli@latest && \
+    chown -R vscode /go
