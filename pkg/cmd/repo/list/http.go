@@ -65,21 +65,21 @@ func fetchReposRecurse(client *http.Client, req *http.Request, repositories *api
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Request Error: %s", err)
 		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Body Parsing Error: %s", err)
 		return
 	}
 
 	var partialRepositories api.Repositories
 
 	if err := json.Unmarshal([]byte(body), &partialRepositories); err != nil {
-		fmt.Println(err)
+		fmt.Printf("Unmarshalling error Error: %s", err)
 		return
 	}
 
@@ -89,8 +89,11 @@ func fetchReposRecurse(client *http.Client, req *http.Request, repositories *api
 			newReq, err := http.NewRequest("GET", partialRepositories.Next, nil)
 			newReq.Header.Add("Authorization", req.Header["Authorization"][0])
 			newReq.Header.Add("Accept", req.Header["Accept"][0])
-			if err != nil || len(repositories.Values) >= opts.limit {
-				fmt.Println(err)
+			if err != nil {
+				fmt.Printf("Request Error: %s", err)
+				return
+			}
+			if len(repositories.Values) >= opts.limit {
 				return
 			}
 			fetchReposRecurse(client, newReq, repositories)
