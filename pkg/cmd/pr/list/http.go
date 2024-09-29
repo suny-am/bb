@@ -7,23 +7,26 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/suny-am/bitbucket-cli/api"
 )
 
-func listRepos(opts *ListOptions) (*api.Repositories, error) {
+func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
+
 	client := &http.Client{}
-	var repositories api.Repositories
+	var pullrequests api.Pullrequests
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
-	if opts.workspace != "" {
-		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.workspace)
-	}
+	endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, opts.workspace, opts.repository)
 
-	if opts.nameFilter != "" {
-		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.nameFilter)
+	if opts.titleFilter != "" {
+		endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
+	} else if opts.authorFilter != "" {
+		endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.authorFilter)
+		endpoint = strings.ReplaceAll(endpoint, " ", "%20")
 	}
 
 	var pageLength int
@@ -51,16 +54,16 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)
 
-	fetchReposRecurse(client, req, &repositories)
+	fetchPullrequestsRecurse(client, req, &pullrequests)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &repositories, nil
+	return &pullrequests, nil
 }
 
-func fetchReposRecurse(client *http.Client, req *http.Request, repositories *api.Repositories) {
+func fetchPullrequestsRecurse(client *http.Client, req *http.Request, pullrequests *api.Pullrequests) {
 
 	resp, err := client.Do(req)
 
@@ -76,24 +79,24 @@ func fetchReposRecurse(client *http.Client, req *http.Request, repositories *api
 		return
 	}
 
-	var partialRepositories api.Repositories
+	var particalPullrequests api.Pullrequests
 
-	if err := json.Unmarshal([]byte(body), &partialRepositories); err != nil {
+	if err := json.Unmarshal([]byte(body), &particalPullrequests); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	if partialRepositories.Values != nil {
-		repositories.Values = append(repositories.Values, partialRepositories.Values...)
-		if partialRepositories.Next != "" {
-			newReq, err := http.NewRequest("GET", partialRepositories.Next, nil)
+	if particalPullrequests.Values != nil {
+		pullrequests.Values = append(pullrequests.Values, particalPullrequests.Values...)
+		if particalPullrequests.Next != "" {
+			newReq, err := http.NewRequest("GET", particalPullrequests.Next, nil)
 			newReq.Header.Add("Authorization", req.Header["Authorization"][0])
 			newReq.Header.Add("Accept", req.Header["Accept"][0])
-			if err != nil || len(repositories.Values) >= opts.limit {
+			if err != nil || len(pullrequests.Values) >= opts.limit {
 				fmt.Println(err)
 				return
 			}
-			fetchReposRecurse(client, newReq, repositories)
+			fetchPullrequestsRecurse(client, newReq, pullrequests)
 		}
 	}
 }
