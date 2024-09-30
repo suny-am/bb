@@ -133,36 +133,35 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 ## Roadmap
 
 - [ ] Core commands
-  - [x] Root 
+  - [x] Root
   - [ ] Workspace
   - [ ] Repository
-    - [ ] Branch restrictions    
-    - [ ] Branching model    
-    - [ ] Commits
+    - [ ] Branch restrictions
+    - [ ] Branching model
+    - [x] Commits
     - [ ] Deploy Keys
     - [ ] Downloads
     - [ ] Environments
-    - [ ] Repositories
-    - [ ] Pullrequests
+    - [x] Repositories
+    - [x] Pullrequests
     - [ ] Refs
     - [ ] Reports
     - [ ] Source
   - [ ] Project
-    - [ ] Branch restrictions    
-    - [ ] Branching model    
+    - [ ] Branch restrictions
+    - [ ] Branching model
     - [ ] Deploy Keys
     - [ ] Issue tracker
     - [ ] Pipelines
     - [ ] Projects
   - [ ] User
-    - [ ] Pullrequests
+    - [x] Pullrequests
   - [ ] Snippets
 - [ ] Flags
 - [ ] Help Topics
 - [ ] Config
 - [ ] Auth
 - [ ] TBD
-
 
 See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
 
