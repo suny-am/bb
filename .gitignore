@@ -1,8 +1,5 @@
-# local data
-*.json
-
 # enviroment
 *.env
 
-# build
-./bitbucket-cli
+# goreleaser
+dist/
