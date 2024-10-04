@@ -27,6 +27,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	"github.com/suny-am/bitbucket-cli/pkg/cmd/code"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
 )
@@ -63,4 +64,5 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(repo.RepoCmd)
 	rootCmd.AddCommand(pr.PrCmd)
+	rootCmd.AddCommand(code.CodeCmd)
 }

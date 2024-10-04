@@ -20,11 +20,9 @@
   <p align="center">
     CLI For Bitbucket Cloud
     <br />
-    <a href="https://github.com/suny-am/bitbucket-cli"><strong>Explore the docs »</strong></a>
+    <!-- <a href="https://github.com/suny-am/bitbucket-cli"><strong>Explore the docs »</strong></a> -->
+    <!-- <br /> -->
     <br />
-    <br />
-    <a href="https://github.com/suny-am/bitbucket-cli">View Demo</a>
-    ·
     <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
@@ -62,7 +60,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
 A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket resources without leaving your terminal.
 
@@ -130,7 +128,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- ROADMAP -->
-## Roadmap
+## Feature Roadmap
 
 - [ ] Core commands
   - [x] Root

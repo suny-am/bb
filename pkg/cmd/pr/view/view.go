@@ -155,7 +155,6 @@ func renderFields(pr api.Pullrequest) {
 
 	tp.Render()
 	// list comments
-
 	fmt.Println("")
 
 	for i, c := range pr.Comments.Values {

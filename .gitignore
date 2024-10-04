@@ -3,3 +3,6 @@
 
 # enviroment
 *.env
+
+# build
+./bitbucket-cli

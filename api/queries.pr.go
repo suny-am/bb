@@ -34,9 +34,7 @@ type (
 		Role     string
 		Approved bool
 	}
-	Commit struct {
-		Hash string
-	}
+
 	Rendered struct {
 		Title       TextElem
 		Description TextElem
