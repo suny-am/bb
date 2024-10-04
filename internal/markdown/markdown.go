@@ -7,7 +7,7 @@ import (
 )
 
 func Render(readme string) {
-	markdown := markdown.Render(readme, 80, 6)
+	markdown := markdown.Render(readme, 240, 6)
 
 	fmt.Println(string(markdown))
 }
