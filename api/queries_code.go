@@ -12,7 +12,7 @@ type CodeSearchResponse struct {
 type CodeItem struct {
 	Type                string
 	Content_match_count int
-	Content_matches     ContentMatch
+	Content_matches     []ContentMatch
 	Patch_matches       []PathMatch
 	File                File
 }
@@ -35,7 +35,8 @@ type PathMatch struct {
 }
 
 type File struct {
-	Path  string
-	Type  string
-	Links Links
+	Path   string
+	Type   string
+	Links  Links
+	Source string
 }
