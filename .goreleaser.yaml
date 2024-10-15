@@ -19,7 +19,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     goos:
-      - linux
+      # - linux // TBD: don't build for not to decrease build times while experimentin with darwin
       # - windows // TBD: need to figure out security handling as keyring probably does not work the same way OOB
       - darwin
 
