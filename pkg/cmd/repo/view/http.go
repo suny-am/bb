@@ -64,7 +64,7 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 		return nil, err
 	}
 
-	endpoint = fmt.Sprintf("%s/src/master/README.md", endpoint)
+	endpoint = fmt.Sprintf("%s/src/master/README", endpoint)
 
 	readmeReq, _ := http.NewRequest("GET", endpoint, nil)
 	readmeReq.Header.Add("Authorization", authHeaderValue)
