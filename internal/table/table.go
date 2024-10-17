@@ -1,35 +1,70 @@
 package table
 
 import (
-	"strings"
+	"os/exec"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/suny-am/bitbucket-cli/api"
 )
 
-func Draw() {
+func Draw(data api.Repositories, headers []string) {
 	app := tview.NewApplication()
+	app.EnableMouse(true)
 	table := tview.NewTable().
-		SetBorders(true)
-	lorem := strings.Split("Lorem ipsum aasfafasfasfafq36123622y2y423dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.", " ")
-	cols, rows := 5, 100
-	word := 0
-	headers := strings.Split("1 2 3 4 5", " ")
+		SetBorders(false)
+	table.SetBackgroundColor(tcell.ColorDefault)
+	// headers
 	for i, v := range headers {
 		table.SetCell(0, i,
 			tview.NewTableCell(v).
+				SetSelectable(false).
+				SetBackgroundColor(tcell.ColorDarkBlue).
 				SetTextColor(tcell.ColorYellow).
 				SetAlign(tview.AlignCenter),
 		)
 	}
-	for r := 1; r < rows; r++ {
-		for c := 0; c < cols; c++ {
+	// data
+	for r, v := range data.Values {
+		for c := range headers {
 			color := tcell.ColorWhite
-			table.SetCell(r, c,
-				tview.NewTableCell(lorem[word]).
-					SetTextColor(color).
-					SetAlign(tview.AlignCenter))
-			word = (word + 1) % len(lorem)
+			var text string
+			var maxWidth *int
+			switch headers[c] {
+			case "NAME":
+				text = v.Name
+			case "DESCRIPTION":
+				if v.Description != "" {
+					text = v.Description
+					maxWidthVal := 80
+					maxWidth = &maxWidthVal
+				} else {
+					text = "NA"
+					color = tcell.ColorRed
+				}
+			case "VISIBILITY":
+				if v.Is_Private {
+					text = "private"
+					color = tcell.ColorRed
+				} else {
+					text = "public"
+				}
+			case "UPDATED":
+				text = v.Updated_On
+			}
+			cell := tview.NewTableCell(text).
+				SetTextColor(color).
+				SetAlign(tview.AlignLeft).
+				SetReference(v.Links.Html.Href).
+				SetClickedFunc(func() bool {
+					cellRef := table.GetCell(r+1, c).GetReference().(string)
+					err := exec.Command("open", cellRef).Start()
+					return err == nil
+				})
+			if maxWidth != nil {
+				cell.SetMaxWidth(*maxWidth)
+			}
+			table.SetCell(r+1, c, cell)
 		}
 	}
 	table.SetBorderPadding(1, 1, 1, 1)
@@ -40,16 +75,19 @@ func Draw() {
 		}
 		return event
 	})
+	table.SetSelectable(true, false)
+	table.SetSelectedStyle(
+		tcell.StyleDefault.
+			Background(tcell.ColorBlue).
+			Foreground(tcell.ColorWhiteSmoke))
 	table.Select(0, 0).SetFixed(1, 1).SetDoneFunc(func(key tcell.Key) {
-		if key == tcell.KeyCtrlQ {
+		if key == tcell.KeyEscape {
 			app.Stop()
 		}
-		if key == tcell.KeyEnter {
-			table.SetSelectable(true, false)
-		}
-	}).SetSelectedFunc(func(row int, column int) {
-		table.GetCell(row, column).SetTextColor(tcell.ColorRed)
-		table.SetSelectable(false, false)
+		table.SetSelectedFunc(func(row, column int) {
+			cellRef := table.GetCell(row, column).GetReference().(string)
+			exec.Command("open", cellRef).Start()
+		})
 	})
 	if err := app.SetRoot(table, true).SetFocus(table).Run(); err != nil {
 		panic(err)

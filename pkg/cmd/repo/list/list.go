@@ -23,13 +23,10 @@ package list
 
 import (
 	"errors"
-	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
-	text "github.com/suny-am/bitbucket-cli/internal/text"
+	"github.com/suny-am/bitbucket-cli/internal/table"
 )
 
 type ListOptions struct {
@@ -47,7 +44,6 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more personal and/or workspace repositories`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
@@ -55,34 +51,12 @@ var ListCmd = &cobra.Command{
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
 		repos, err := listRepos(&opts)
-
 		if err != nil {
 			return err
 		}
 
-		tp := tablePrinter.New(os.Stdout, true, 500)
-		cs := *iostreams.NewColorScheme(true, true, true)
-
 		headers := []string{"NAME", "DESCRIPTION", "VISIBILITY", "UPDATED"}
-		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range repos.Values {
-			repo := repos.Values[i]
-			tp.Field(repo.Full_Name, tablePrinter.WithColor(cs.Bold))
-			if repo.Description != "" {
-				tp.Field(text.TruncateSimple(text.FormatCR(repo.Description), 50))
-			} else {
-				tp.Field("NA", tablePrinter.WithColor(cs.RedBold))
-			}
-			if repo.Is_Private {
-				tp.Field("private", tablePrinter.WithColor(cs.Gray))
-			} else {
-				tp.Field("public", tablePrinter.WithColor(cs.Yellow))
-			}
-			tp.Field(repo.Updated_On, tablePrinter.WithColor(cs.Gray))
-			tp.EndRow()
-		}
-
-		tp.Render()
+		table.Draw(*repos, headers)
 
 		return nil
 	},

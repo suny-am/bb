@@ -20,6 +20,7 @@ type (
 		Has_Wiki    bool
 		Owner       Owner
 		Mainbranch  Type
+		Links       Links
 		Readme      string
 
 		Created_On string

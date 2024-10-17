@@ -23,13 +23,9 @@ package list
 
 import (
 	"errors"
-	"os"
-	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 )
 
 type PrListOptions struct {
@@ -49,35 +45,16 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more public or workspace related pullrequests`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		pullrequests, err := listPullrequests(&opts)
-
-		if err != nil {
-			return err
-		}
-
-		tp := tablePrinter.New(os.Stdout, true, 500)
-		cs := *iostreams.NewColorScheme(true, true, true)
-
-		headers := []string{"TITLE", "AUTHOR", "COMMENTS", "TASKS", "UPDATED"}
-		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range pullrequests.Values {
-			pr := pullrequests.Values[i]
-			tp.Field(pr.Title, tablePrinter.WithColor(cs.Bold))
-			tp.Field(pr.Author.Display_Name)
-			tp.Field(strconv.Itoa(pr.Comment_Count))
-			tp.Field(strconv.Itoa(pr.Task_Count))
-			tp.Field(pr.Updated_On, tablePrinter.WithColor(cs.Gray))
-			tp.EndRow()
-		}
-
-		tp.Render()
+		//pullrequests, err := listPullrequests(&opts)
+		//if err != nil {
+		//	return err
+		//}
 
 		return nil
 	},

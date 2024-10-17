@@ -23,16 +23,10 @@ package view
 
 import (
 	"errors"
-	"fmt"
-	"os"
-	"reflect"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/api"
-	"github.com/suny-am/bitbucket-cli/internal/iostreams"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
 	"github.com/suny-am/bitbucket-cli/internal/markdown"
-	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view/forks"
 )
 
@@ -50,7 +44,6 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a repository in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if len(args) < 1 {
 			return errors.New("<repository> argument is required")
 		}
@@ -63,14 +56,11 @@ var ViewCmd = &cobra.Command{
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
 		repo, err := viewRepo(&opts)
-
 		if err != nil {
 			return err
 		}
 
 		markdown.Render(repo.Readme)
-
-		renderFields(*repo)
 
 		return nil
 	},
@@ -81,46 +71,4 @@ func init() {
 
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ViewCmd.MarkFlagRequired("workspace")
-}
-
-func renderFields(repo api.Repository) {
-
-	tp := tablePrinter.New(os.Stdout, true, 200)
-	cs := *iostreams.NewColorScheme(true, true, true)
-
-	repoVal := reflect.ValueOf(repo)
-	vType := repoVal.Type()
-
-	for i := 0; i < repoVal.NumField(); i++ {
-		if vType.Field(i).Name == "Readme" {
-			continue
-		}
-		tp.Field(vType.Field(i).Name, tablePrinter.WithColor(cs.Bold))
-		v := repoVal.Field(i)
-		switch v.Kind() {
-		case reflect.Bool:
-			tp.Field(fmt.Sprintf("%v", v))
-		case reflect.String:
-			if v.String() == "" {
-				tp.Field("NA", tablePrinter.WithColor(cs.Red))
-			} else {
-				tp.Field(v.String())
-			}
-		case reflect.Int:
-			tp.Field(fmt.Sprintf("%d", v.Int()))
-		case reflect.Struct:
-			switch vType.Field(i).Name {
-			case "Owner":
-				tp.Field(repo.Owner.Display_Name)
-			case "Mainbranch":
-				tp.Field(repo.Mainbranch.Name)
-			case "Project":
-				tp.Field(repo.Project.Name)
-			}
-		}
-
-		tp.EndRow()
-	}
-
-	tp.Render()
 }

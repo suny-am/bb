@@ -43,7 +43,6 @@ Pull Request information and much more, all from your terminal.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		CredProvider := keyring.NewCredentialsProvider()
 		credentials, err := CredProvider.GetCredentials()
-
 		if err != nil {
 			return err
 		}
