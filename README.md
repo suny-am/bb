@@ -77,6 +77,7 @@ A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket res
 ### Status
 
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb?ref=badge_shield&issueType=security)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
