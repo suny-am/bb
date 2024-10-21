@@ -62,7 +62,7 @@
 
 ## About The Project
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket resources without leaving your terminal.
 
@@ -287,6 +287,7 @@ Project Link: [https://github.com/suny-am/bb](https://github.com/suny-am/bb)
 <br>
 <p align="right"><a href="#readme-top">🔝</a></p>
 
+[product-screenshot]: ./.docs/images/screenshot.png
 [contributors-shield]: https://img.shields.io/github/contributors/suny-am/bb.svg?style=for-the-badge
 [contributors-url]: https://github.com/suny-am/bb/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/suny-am/bb?style=for-the-badge
