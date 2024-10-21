@@ -18,19 +18,13 @@ type (
 		Full_Name   string
 		Is_Private  bool
 		Has_Wiki    bool
-		Owner       Owner
+		Owner       User
 		Mainbranch  Type
 		Links       Links
 		Readme      string
 
 		Created_On string
 		Updated_On string
-	}
-	Owner struct {
-		Display_Name string
-		Username     string
-		UUID         string
-		Type         string
 	}
 	Type struct {
 		Name string

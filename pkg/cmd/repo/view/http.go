@@ -26,19 +26,18 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/suny-am/bitbucket-cli/api"
 )
 
 func viewRepo(opts *ViewOptions) (*api.Repository, error) {
-
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, opts.repository)
 
 	client := &http.Client{}
 
 	repoReq, err := http.NewRequest("GET", endpoint, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +46,6 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 	repoReq.Header.Add("Authorization", authHeaderValue)
 
 	resp, err := client.Do(repoReq)
-
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +53,6 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 	var repository api.Repository
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +65,24 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 
 	readmeReq, _ := http.NewRequest("GET", endpoint, nil)
 	readmeReq.Header.Add("Authorization", authHeaderValue)
-	readmeResp, _ := client.Do(readmeReq)
-	readmeBody, _ := io.ReadAll(readmeResp.Body)
-
-	if readmeText := string(readmeBody); readmeText != "" {
-		repository.Readme = readmeText
+	readmeResp, err := client.Do(readmeReq)
+	var readmeBody []byte
+	if err != nil || readmeResp.StatusCode != 200 {
+		endpoint = strings.ReplaceAll(endpoint, "README", "README.md")
+		readmeReq, _ = http.NewRequest("GET", endpoint, nil)
+		readmeReq.Header.Add("Authorization", authHeaderValue)
+		readmeResp, err = client.Do(readmeReq)
+		if err != nil || readmeResp.StatusCode != 200 {
+			readmeBody = nil
+		} else {
+			readmeBody, _ = io.ReadAll(readmeResp.Body)
+		}
 	}
 
+	if readmeBody != nil {
+		if readmeText := string(readmeBody); readmeText != "" {
+			repository.Readme = readmeText
+		}
+	}
 	return &repository, nil
 }

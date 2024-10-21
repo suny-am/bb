@@ -23,9 +23,12 @@ package list
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	"github.com/suny-am/bitbucket-cli/internal/table"
 )
 
 type PrListOptions struct {
@@ -51,13 +54,48 @@ var ListCmd = &cobra.Command{
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		//pullrequests, err := listPullrequests(&opts)
-		//if err != nil {
-		//	return err
-		//}
+		pullrequests, err := listPullrequests(&opts)
+		if err != nil {
+			return err
+		}
+
+		if err := drawPrTable(pullrequests); err != nil {
+			return err
+		}
 
 		return nil
 	},
+}
+
+func drawPrTable(pullrequests *api.Pullrequests) error {
+	headerData := []table.HeaderModel{
+		{Key: "Branch"},
+		{Key: "Author"},
+		{Key: "State"},
+		{Key: "Updated"},
+	}
+	rowData := []table.RowModel{}
+
+	for i, p := range pullrequests.Values {
+		var focused bool
+		if i == 0 {
+			focused = true
+		} else {
+			focused = false
+		}
+
+		rowData = append(rowData, table.RowModel{
+			Id: fmt.Sprintf("%d", i+1),
+			Data: []string{
+				p.Source.Branch.Name, p.Author.Nickname, p.State, p.Updated_On,
+			},
+			Focused: focused,
+			Link:    &p.Links.Html.Href,
+		})
+	}
+
+	table.Draw(headerData, rowData)
+	return nil
 }
 
 func init() {

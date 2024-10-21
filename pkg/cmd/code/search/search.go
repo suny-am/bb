@@ -2,11 +2,9 @@ package search
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	"github.com/suny-am/bitbucket-cli/internal/markdown"
 )
 
 type SearchOptions struct {
@@ -26,7 +24,6 @@ var SearchCmd = &cobra.Command{
 	Long:  `Search for code in a workspace or repository`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if len(args) < 1 {
 			return errors.New("<searchParam> required")
 		}
@@ -38,19 +35,18 @@ var SearchCmd = &cobra.Command{
 		opts.searchParam = args[0]
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		code, err := searchCode(&opts)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		for _, c := range code.Values {
-			markdown.Render(fmt.Sprintf("- **%s**\n- ```%s````", c.File.Path, c.File.Links.Html.Href))
-			if opts.includeSource {
-				markdown.Render(c.File.Source)
+		/*
+			code, err := searchCode(&opts)
+			if err != nil {
+				fmt.Println(err)
 			}
-		}
-
+				for _, c := range code.Values {
+					markdown.Render(fmt.Sprintf("- **%s**\n- ```%s````", c.File.Path, c.File.Links.Html.Href))
+					if opts.includeSource {
+						markdown.Render(c.File.Source)
+					}
+				}
+		*/
 		return nil
 	},
 }

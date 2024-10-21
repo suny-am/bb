@@ -23,10 +23,15 @@ package view
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
+	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	"github.com/suny-am/bitbucket-cli/internal/markdown"
+	"github.com/suny-am/bitbucket-cli/internal/textview"
 	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view/forks"
 )
 
@@ -57,18 +62,60 @@ var ViewCmd = &cobra.Command{
 
 		repo, err := viewRepo(&opts)
 		if err != nil {
-			return err
+			fmt.Println("Could not get reposiotry", err)
 		}
 
-		markdown.Render(repo.Readme)
+		drawRepoView(repo)
 
 		return nil
 	},
 }
 
+func colorAttribute(key string, value string) string {
+	keyStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#3d8280")).PaddingLeft(2).Render(key)
+	valueStyle := lipgloss.NewStyle().PaddingBottom(1).Render(value)
+	return strings.Join([]string{keyStyle, valueStyle}, ": ")
+}
+
+func drawRepoView(repo *api.Repository) {
+	var status string
+	if repo.Is_Private {
+		status = "Private"
+	} else {
+		status = "Public"
+	}
+	content := []string{
+		colorAttribute("Owner", fmt.Sprintf("%s <%s>", repo.Owner.Display_Name, repo.Owner.Nickname)),
+		colorAttribute("Size", fmt.Sprintf("%d Kb", repo.Size/1000)),
+		colorAttribute("Language", repo.Language),
+		colorAttribute("Project", fmt.Sprintf("%s [%s]", repo.Project.Name, repo.Project.Type)),
+		colorAttribute("Created", repo.Created_On),
+		colorAttribute("Updated", repo.Updated_On),
+		colorAttribute("Status", status),
+		colorAttribute("Main branch", fmt.Sprintf("%s [%s]", repo.Mainbranch.Name, repo.Mainbranch.Type)),
+		colorAttribute("Links", repo.Links.Html.Href),
+	}
+
+	if repo.Description != "" {
+		description, err := glamour.Render(repo.Description, "light")
+		if err != nil {
+			panic(err)
+		}
+		content = append(content, description)
+	}
+
+	if repo.Readme != "" {
+		readme, err := glamour.Render(repo.Readme, "light")
+		if err != nil {
+			panic(err)
+		}
+		content = append(content, readme)
+	}
+	textview.DrawView(repo.Name, strings.Join(content, "\n"))
+}
+
 func init() {
 	ViewCmd.AddCommand(forks.ForksCmd)
-
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
 	ViewCmd.MarkFlagRequired("workspace")
 }

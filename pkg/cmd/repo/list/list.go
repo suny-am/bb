@@ -23,8 +23,11 @@ package list
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
 	"github.com/suny-am/bitbucket-cli/internal/table"
 )
@@ -55,11 +58,53 @@ var ListCmd = &cobra.Command{
 			return err
 		}
 
-		headers := []string{"NAME", "DESCRIPTION", "VISIBILITY", "UPDATED"}
-		table.Draw(*repos, headers)
+		if err := drawRepoTable(repos); err != nil {
+			return err
+		}
 
 		return nil
 	},
+}
+
+func drawRepoTable(repos *api.Repositories) error {
+	headerData := []table.HeaderModel{
+		{Key: "Name"},
+		{Key: "Description"},
+		{Key: "Access"},
+		{Key: "Updated"},
+	}
+	rowData := []table.RowModel{}
+
+	for i, r := range repos.Values {
+		var access string
+		if r.Is_Private {
+			access = "Private"
+		} else {
+			access = "Public"
+		}
+
+		var focused bool
+		if i == 0 {
+			focused = true
+		} else {
+			focused = false
+		}
+
+		desc := strings.ReplaceAll(r.Description, "\r\n", " ")
+
+		rowData = append(rowData, table.RowModel{
+			Id: fmt.Sprintf("%d", i+1),
+			Data: []string{
+				r.Name, desc, access, r.Updated_On,
+			},
+			Focused: focused,
+			Link:    &r.Links.Html.Href,
+		})
+	}
+
+	table.Draw(headerData, rowData)
+
+	return nil
 }
 
 func init() {

@@ -19,8 +19,9 @@ type (
 		Comment_Count       int
 		Task_Count          int
 		Merge_Commit        Commit
-		Close_Source_branch bool
+		Close_Source_Branch bool
 		Closed_By           Type
+		Source              Source
 		Reason              string
 		Created_On          string
 		Updated_On          string
@@ -34,7 +35,15 @@ type (
 		Role     string
 		Approved bool
 	}
-
+	Source struct {
+		Repository Repository
+		Branch     Branch
+		Commit     Commit
+	}
+	Branch struct {
+		Name  string
+		Links Links
+	}
 	Rendered struct {
 		Title       TextElem
 		Description TextElem
