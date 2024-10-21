@@ -112,16 +112,24 @@ git clone https://github.com/suny-am/bitbucket-cli.git
 
 #### 2. Build
 
+```sh
+cd bb
+```
+
 ##### 2.b Local
 
 ```sh
+cd bb && \
 go build
 ```
 
 ##### 2.a Docker
 
 ```sh
-docker build . -t "bitbucket-cli"
+docker build . -t bb
+docker run -id -v . bb:latest
+docker exec -it <container-name> bash
+go build
 ```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
