@@ -1,6 +1,7 @@
 <a name="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -15,7 +16,7 @@
     <img src=".docs/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">bitbucket-cli</h3>
+<h1 align="center">BB</h1>
 
   <p align="center">
     CLI For Bitbucket Cloud
@@ -37,17 +38,17 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
-        <li><a href="#status">Built With</a></li>
+        <li><a href="#status">Status</a></li>
       </ul>
     </li>
+    <li><a href="#usage">Usage</a></li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#Development">Development</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -58,6 +59,7 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
@@ -79,55 +81,106 @@ A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket res
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- GETTING STARTED -->
-## Getting Started
+
+## Development
 
 This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-Testing and developing the application locally requires **go1.22.7** to be available (the latest release to be tested for now.
+Testing and developing the application locally requires **go1.22.7** to be available (the latest release to be tested for now).
+<br>See the [official documentation](https://go.dev/doc/install) for instructions on installing Go on your platform of choice.
 
-#### Go
+#### macOS Example
 
-  ```sh
-  # MacOS example
-  brew install go
-  go version
-  # example output: 
-  # go version go1.22.7 linux/amd64  
-  ```
+```sh
+brew install go
+go version
+# example output:
+# go version go1.22.7 linux/amd64
+```
 
 ### Installation
 
 #### 1. Clone the repo
 
-   ```sh
-   git clone https://github.com/suny-am/bitbucket-cli.git
-   ```
+```sh
+git clone https://github.com/suny-am/bitbucket-cli.git
+```
 
-#### 2. TBD
+#### 2. Build
+
+##### 2.b Local
+
+```
+
+```
 
 ##### 2.a Docker
 
-   ```sh
-   docker build . -t "bitbucket-cli"
-   docker run bitbucket-cli
-   docker-exec -it bitbucket-cli zsh
-   ```
+```sh
+docker build . -t "bitbucket-cli"
+```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Currently, only **READ** actions (such as viewing repositories, pull requests and searching for code) is supported, but the plan is to integrate all actions supported by the official Bitbucket REST API.
+
+### Usage examples
+
+#### Repositories
+
+```sh
+# List repositories
+bb repo list
+
+# List repositories in a workspace
+bb repo list -w my-workspace
+
+# List repsitories with a custom limit
+bb repo list -l 500
+
+# View a repository
+bb repo view -w my-workspace my-repo
+```
+
+#### Pullrequests
+
+```sh
+# List pullrequests for a repository
+bb pr list -w my-workspace -r my-repo
+
+# View a specific pullrequest
+bb pr view -w my-workspace -r my-repo my-pullrequest
+```
+
+#### Code Search
+
+```sh
+# Search for code in a workspace
+bb code search -w my-workspace variableName
+
+# Search for code in a repository
+bb code search -w my-workspace -r my-repo variableName
+
+# Multiple terms are supported
+bb code search -w my-workspace -r my-repo "variable1 variable2 const1"
+
+# As are non ASCII characters
+bb code search -w my-workspace -r my-repo "myfunc() => { x % 5 == 0 }"
+```
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- ROADMAP -->
+
 ## Feature Roadmap
 
 - [ ] Core commands
@@ -166,6 +219,7 @@ See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a ful
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -201,24 +255,26 @@ git push origin feature/aNewCoolFeature
 ### 5. Open a Pull Request
 
 ```sh
-gh pr create 
+gh pr create
 ```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- LICENSE -->
+
 ## License
 
-Distributed under the MIT License. See [LICENCE.txt](LICENCE.txt) for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE.txt) for more information.
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- CONTACT -->
+
 ## Contact
 
 Your Name - [@bsky_handle](https://bsky.app/profile/bsky_handle) - <visualarea.1@gmail.com>
 
-Project Link: [https://github.com/suny-am/bitbucket-cli](https://github.com/suny-am/bitbucket-cli)
+Project Link: [https://github.com/suny-am/bb](https://github.com/suny-am/bb)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
@@ -227,56 +283,21 @@ Project Link: [https://github.com/suny-am/bitbucket-cli](https://github.com/suny
 - [Atlassian Bitbucket Cloud REST API Documentation](https://developer.atlassian.com/cloud/bitbucket/rest/)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
-
-<!-- ACKNOWLEDGMENTS -->
-
-<!-- 
-## Acknowledgments
-
-<div style="padding:10px; border-radius: 5px;">
-
-I would like to thank the following people for their contributions and support:
-
-<div style="padding:10px; border-radius: 5px; margin: 10px 0;">
-
-### [@contributor1](https://github.com/contributor1) - for providing helpful feedback and suggestions
-
-</div>
-
-<div style="padding:10px; border-radius: 5px; margin: 10px 0;">
-
-### [@contributor2](https://github.com/contributor2) - for contributing code and bug fixes
-
-</div>
-
-<div style="padding:10px; border-radius: 5px; margin: 10px 0;">
-
-### [@contributor3](https://github.com/contributor3) - for helping with documentation and testing
-
-</div>
-
-Thank you all for your time and effort in making this project better!
-
-</div> 
--->
   
 <br>
 <p align="right"><a href="#readme-top">🔝</a></p>
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/suny-am/bitbucket-cli.svg?style=for-the-badge
-[contributors-url]: https://github.com/suny-am/bitbucket-cli/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/suny-am/bitbucket-cli?style=for-the-badge
-[forks-url]: https://github.com/suny-am/bitbucket-cli/network/members
-[stars-shield]: https://img.shields.io/github/stars/suny-am/bitbucket-cli.svg?style=for-the-badge
-[stars-url]: https://github.com/suny-am/bitbucket-cli/stargazers
-[issues-shield]: https://img.shields.io/github/issues/suny-am/bitbucket-cli.svg?style=for-the-badge
-[issues-url]: https://github.com/suny-am/bitbucket-cli/issues
-[license-shield]: https://img.shields.io/github/license/suny-am/bitbucket-cli.svg?style=for-the-badge
-[license-url]: https://github.com/suny-am/bitbucket-cli/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/suny-am/bb.svg?style=for-the-badge
+[contributors-url]: https://github.com/suny-am/bb/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/suny-am/bb?style=for-the-badge
+[forks-url]: https://github.com/suny-am/bb/network/members
+[stars-shield]: https://img.shields.io/github/stars/suny-am/bb.svg?style=for-the-badge
+[stars-url]: https://github.com/suny-am/bb/stargazers
+[issues-shield]: https://img.shields.io/github/issues/suny-am/bb.svg?style=for-the-badge
+[issues-url]: https://github.com/suny-am/bb/issues
+[license-shield]: https://img.shields.io/github/license/suny-am/bb.svg?style=for-the-badge
+[license-url]: https://github.com/suny-am/bb/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/carl-sandberg-01070a2b6/
-[product-screenshot]: .docs/images/screenshot.png
 [go]: https://img.shields.io/badge/go-%2300ADD8?style=for-the-badge&logo=go&logoColor=white&logoSize=auto
 [go-url]: https://go.dev/

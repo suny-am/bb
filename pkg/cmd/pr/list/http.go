@@ -13,7 +13,6 @@ import (
 )
 
 func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
-
 	client := &http.Client{}
 	var pullrequests api.Pullrequests
 
@@ -38,7 +37,6 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 	}
 
 	endpointUrl, err := url.Parse(endpoint)
-
 	if err != nil {
 		return nil, err
 	}
@@ -64,16 +62,13 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 }
 
 func fetchPullrequestsRecurse(client *http.Client, req *http.Request, pullrequests *api.Pullrequests) {
-
 	resp, err := client.Do(req)
-
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		fmt.Println(err)
 		return

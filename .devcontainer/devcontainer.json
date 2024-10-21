@@ -1,7 +1,4 @@
 {
-	"name": "BitBucket CLI Development",
-	"dockerFile": "../Dockerfile",
-	"containerEnv": {
-		"HOME": "/home/vscode"
-	}
+  "name": "BitBucket CLI Development",
+  "dockerFile": "../Dockerfile"
 }

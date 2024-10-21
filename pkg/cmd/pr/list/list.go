@@ -23,13 +23,12 @@ package list
 
 import (
 	"errors"
-	"os"
-	"strconv"
+	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/iostreams"
+	"github.com/suny-am/bitbucket-cli/api"
 	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	tablePrinter "github.com/suny-am/bitbucket-cli/internal/tableprinter"
+	"github.com/suny-am/bitbucket-cli/internal/table"
 )
 
 type PrListOptions struct {
@@ -49,7 +48,6 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more public or workspace related pullrequests`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
@@ -57,30 +55,47 @@ var ListCmd = &cobra.Command{
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
 		pullrequests, err := listPullrequests(&opts)
-
 		if err != nil {
 			return err
 		}
 
-		tp := tablePrinter.New(os.Stdout, true, 500)
-		cs := *iostreams.NewColorScheme(true, true, true)
-
-		headers := []string{"TITLE", "AUTHOR", "COMMENTS", "TASKS", "UPDATED"}
-		tp.Header(headers, tablePrinter.WithColor(cs.LightGrayUnderline))
-		for i := range pullrequests.Values {
-			pr := pullrequests.Values[i]
-			tp.Field(pr.Title, tablePrinter.WithColor(cs.Bold))
-			tp.Field(pr.Author.Display_Name)
-			tp.Field(strconv.Itoa(pr.Comment_Count))
-			tp.Field(strconv.Itoa(pr.Task_Count))
-			tp.Field(pr.Updated_On, tablePrinter.WithColor(cs.Gray))
-			tp.EndRow()
+		if err := drawPrTable(pullrequests); err != nil {
+			return err
 		}
-
-		tp.Render()
 
 		return nil
 	},
+}
+
+func drawPrTable(pullrequests *api.Pullrequests) error {
+	headerData := []table.HeaderModel{
+		{Key: "Branch"},
+		{Key: "Author"},
+		{Key: "State"},
+		{Key: "Updated"},
+	}
+	rowData := []table.RowModel{}
+
+	for i, p := range pullrequests.Values {
+		var focused bool
+		if i == 0 {
+			focused = true
+		} else {
+			focused = false
+		}
+
+		rowData = append(rowData, table.RowModel{
+			Id: fmt.Sprintf("%d", i+1),
+			Data: []string{
+				p.Source.Branch.Name, p.Author.Nickname, p.State, p.Updated_On,
+			},
+			Focused: focused,
+			Link:    &p.Links.Html.Href,
+		})
+	}
+
+	table.Draw(headerData, rowData)
+	return nil
 }
 
 func init() {
