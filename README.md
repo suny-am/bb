@@ -1,6 +1,7 @@
 <a name="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -58,6 +59,7 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
@@ -79,6 +81,7 @@ A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket res
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- GETTING STARTED -->
+
 ## Development
 
 This is an example of how you may give instructions on setting up your project locally.
@@ -91,20 +94,20 @@ Testing and developing the application locally requires **go1.22.7** to be avail
 
 #### macOS Example
 
-  ```sh
-  brew install go
-  go version
-  # example output: 
-  # go version go1.22.7 linux/amd64  
-  ```
+```sh
+brew install go
+go version
+# example output:
+# go version go1.22.7 linux/amd64
+```
 
 ### Installation
 
 #### 1. Clone the repo
 
-   ```sh
-   git clone https://github.com/suny-am/bitbucket-cli.git
-   ```
+```sh
+git clone https://github.com/suny-am/bitbucket-cli.git
+```
 
 #### 2. Build
 
@@ -116,13 +119,14 @@ Testing and developing the application locally requires **go1.22.7** to be avail
 
 ##### 2.a Docker
 
-   ```sh
-   docker build . -t "bitbucket-cli"
-   ```
+```sh
+docker build . -t "bitbucket-cli"
+```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 Currently, only **READ** actions (such as viewing repositories, pull requests and searching for code) is supported, but the plan is to integrate all actions supported by the official Bitbucket REST API.
@@ -176,6 +180,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- ROADMAP -->
+
 ## Feature Roadmap
 
 - [ ] Core commands
@@ -214,6 +219,7 @@ See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a ful
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -249,19 +255,21 @@ git push origin feature/aNewCoolFeature
 ### 5. Open a Pull Request
 
 ```sh
-gh pr create 
+gh pr create
 ```
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- LICENSE -->
+
 ## License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE.txt) for more information.
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
 <!-- CONTACT -->
+
 ## Contact
 
 Your Name - [@bsky_handle](https://bsky.app/profile/bsky_handle) - <visualarea.1@gmail.com>
@@ -279,8 +287,6 @@ Project Link: [https://github.com/suny-am/bb](https://github.com/suny-am/bb)
 <br>
 <p align="right"><a href="#readme-top">🔝</a></p>
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/suny-am/bb.svg?style=for-the-badge
 [contributors-url]: https://github.com/suny-am/bb/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/suny-am/bb?style=for-the-badge
@@ -290,7 +296,7 @@ Project Link: [https://github.com/suny-am/bb](https://github.com/suny-am/bb)
 [issues-shield]: https://img.shields.io/github/issues/suny-am/bb.svg?style=for-the-badge
 [issues-url]: https://github.com/suny-am/bb/issues
 [license-shield]: https://img.shields.io/github/license/suny-am/bb.svg?style=for-the-badge
-[license-url]: https://github.com/suny-am/bb/blob/master/LICENSE
+[license-url]: https://github.com/suny-am/bb/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/carl-sandberg-01070a2b6/
 [go]: https://img.shields.io/badge/go-%2300ADD8?style=for-the-badge&logo=go&logoColor=white&logoSize=auto
