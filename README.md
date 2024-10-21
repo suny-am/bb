@@ -114,8 +114,8 @@ git clone https://github.com/suny-am/bitbucket-cli.git
 
 ##### 2.b Local
 
-```
-
+```sh
+go build
 ```
 
 ##### 2.a Docker
