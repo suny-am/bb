@@ -49,6 +49,11 @@ var SearchCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
+		if len(code.Values) == 0 {
+			fmt.Println("No results")
+			return nil
+		}
+
 		pageData := []string{}
 
 		for _, c := range code.Values {
