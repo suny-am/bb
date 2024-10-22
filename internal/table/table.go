@@ -1,8 +1,5 @@
 package table
 
-// A simple program that opens the alternate screen buffer and displays mouse
-// coordinates and events.
-
 import (
 	"fmt"
 	"log"
@@ -74,7 +71,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			if tm.rowData[tm.focusedRow].Link != nil {
-				exec.Command("open", *tm.rowData[tm.focusedRow].Link).Start()
+				openLink(*tm.rowData[tm.focusedRow].Link)
 			}
 		case "i":
 			tm.debug = !tm.debug
@@ -102,9 +99,8 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if rY >= 0 && rY < len(tm.rowData) {
 				tm.focusedRow = rY
 				if tm.rowData[tm.focusedRow].Link != nil && msg.Shift {
-					exec.Command("open", *tm.rowData[tm.focusedRow].Link).Start()
+					openLink(*tm.rowData[tm.focusedRow].Link)
 				}
-
 			}
 
 		case tea.MouseAction(tea.MouseButtonWheelRight):
@@ -214,4 +210,10 @@ func genTable(headerData []HeaderModel, rowData []RowModel, width int, height in
 		Height(height)
 
 	return t
+}
+
+func openLink(link string) {
+	if err := exec.Command("open", link).Start(); err != nil {
+		fmt.Println("Could not open link: ", link)
+	}
 }

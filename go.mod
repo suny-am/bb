@@ -1,4 +1,4 @@
-module github.com/suny-am/bitbucket-cli
+module github.com/suny-am/bb
 
 go 1.22.7
 
@@ -8,7 +8,6 @@ require (
 	github.com/charmbracelet/glamour v0.8.0
 	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lrstanley/bubblezone v0.0.0-20240914071701-b48c55a5e78e
 	github.com/spf13/cobra v1.8.1
 	github.com/zalando/go-keyring v0.2.5
 	gopkg.in/yaml.v3 v3.0.1
@@ -49,6 +48,6 @@ require (
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.22.0 // indirect
+	golang.org/x/term v0.22.0
 	golang.org/x/text v0.18.0 // indirect
 )

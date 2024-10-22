@@ -2,7 +2,7 @@ package code
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/code/search"
+	"github.com/suny-am/bb/pkg/cmd/code/search"
 )
 
 var CodeCmd = &cobra.Command{

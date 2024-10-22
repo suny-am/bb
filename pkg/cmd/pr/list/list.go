@@ -26,9 +26,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/api"
-	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	"github.com/suny-am/bitbucket-cli/internal/table"
+	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/table"
 )
 
 type PrListOptions struct {

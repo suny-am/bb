@@ -26,10 +26,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/code"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo"
+	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/pkg/cmd/code"
+	"github.com/suny-am/bb/pkg/cmd/pr"
+	"github.com/suny-am/bb/pkg/cmd/repo"
 )
 
 var rootCmd = &cobra.Command{

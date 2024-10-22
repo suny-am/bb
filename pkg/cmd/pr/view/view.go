@@ -25,8 +25,8 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/keyring"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view/forks"
+	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
 )
 
 type ViewOptions struct {

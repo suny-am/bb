@@ -23,8 +23,8 @@ package repo
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/list"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/repo/view"
+	"github.com/suny-am/bb/pkg/cmd/repo/list"
+	"github.com/suny-am/bb/pkg/cmd/repo/view"
 )
 
 var RepoCmd = &cobra.Command{

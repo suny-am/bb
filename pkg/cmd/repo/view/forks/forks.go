@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/internal/keyring"
+	"github.com/suny-am/bb/internal/keyring"
 )
 
 type ForksOptions struct {

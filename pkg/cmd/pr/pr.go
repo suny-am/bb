@@ -23,8 +23,8 @@ package pr
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr/list"
-	"github.com/suny-am/bitbucket-cli/pkg/cmd/pr/view"
+	"github.com/suny-am/bb/pkg/cmd/pr/list"
+	"github.com/suny-am/bb/pkg/cmd/pr/view"
 )
 
 var PrCmd = &cobra.Command{

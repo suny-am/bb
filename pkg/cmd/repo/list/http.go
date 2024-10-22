@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/suny-am/bitbucket-cli/api"
+	"github.com/suny-am/bb/api"
 )
 
 func listRepos(opts *ListOptions) (*api.Repositories, error) {

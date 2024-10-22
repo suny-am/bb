@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/suny-am/bitbucket-cli/api"
+	"github.com/suny-am/bb/api"
 )
 
 func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {

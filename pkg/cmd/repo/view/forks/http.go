@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/suny-am/bitbucket-cli/api"
+	"github.com/suny-am/bb/api"
 )
 
 func viewforks(opts *ForksOptions) (*api.Repositories, error) {

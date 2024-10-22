@@ -28,7 +28,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/suny-am/bitbucket-cli/api"
+	"github.com/suny-am/bb/api"
 )
 
 func viewPullrequest(opts *ViewOptions) (*api.Pullrequest, error) {
