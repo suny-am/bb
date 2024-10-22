@@ -23,8 +23,13 @@ package view
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
+	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
 )
@@ -54,15 +59,83 @@ var ViewCmd = &cobra.Command{
 
 		opts.pullrequest = args[0]
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
-		/*
-			repo, err := viewPullrequest(&opts)
 
-			if err != nil {
-				return err
-			}
-		*/
+		pr, err := getPullrequest(&opts)
+		if err != nil {
+			return err
+		}
+
+		if pr == nil {
+			fmt.Println("No results")
+			return nil
+		}
+
+		viewPullrequest(pr)
+
 		return nil
 	},
+}
+
+type comment struct {
+	timestamp string
+	content   string
+}
+
+var (
+	sb      strings.Builder
+	tsStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: "#003300", Dark: "#11bb99"})
+	keyStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.AdaptiveColor{Light: "#003300", Dark: "#00ffff"})
+
+	mdStyle = lipgloss.NewStyle().
+		PaddingLeft(1).
+		PaddingTop(1)
+)
+
+func colorAttribute(key string, value string) string {
+	return fmt.Sprintf("%s: %s\n", keyStyle.Render(key), value)
+}
+
+func viewPullrequest(pr *api.Pullrequest) {
+	re, _ := glamour.NewTermRenderer(glamour.WithAutoStyle(),
+		glamour.WithEmoji())
+
+	sb.WriteString(colorAttribute("Title", pr.Source.Branch.Name))
+	sb.WriteString(colorAttribute("Author", fmt.Sprintf("%s [%s]", pr.Author.Display_Name, pr.Author.Nickname)))
+	sb.WriteString(colorAttribute("Created", pr.Created_On))
+	sb.WriteString(colorAttribute("State", pr.State))
+	sb.WriteString(colorAttribute("Link", pr.Links.Html.Href))
+
+	if pr.Comment_Count > 0 {
+		count := lipgloss.NewStyle().
+			Width(100).
+			BorderStyle(lipgloss.NormalBorder()).
+			BorderBottom(true).
+			Render(colorAttribute("Comments", fmt.Sprintf("%d", pr.Comment_Count)))
+		sb.WriteString(count)
+		commentData := []comment{}
+		for _, c := range pr.Comments.Values {
+			comment := comment{}
+			var ssb strings.Builder
+			tsString := tsStyle.Render(c.Created_On)
+			ssb.WriteString(fmt.Sprintf("\nAuthor: %s [%s] [%s]\n", c.User.Display_Name, c.User.Nickname, tsString))
+			content, err := re.Render(c.Content.Raw)
+			if err == nil {
+				ssb.WriteString(fmt.Sprintf("%s\n\n", content))
+			}
+			comment.timestamp = c.Created_On
+			comment.content = ssb.String()
+			commentData = append(commentData, comment)
+		}
+
+		for _, c := range commentData {
+			sb.WriteString(c.content)
+		}
+
+	}
+
+	fmt.Println(mdStyle.Render(sb.String()))
 }
 
 func init() {
