@@ -31,8 +31,7 @@ import (
 	"github.com/suny-am/bb/api"
 )
 
-func viewPullrequest(opts *ViewOptions) (*api.Pullrequest, error) {
-
+func getPullrequest(opts *ViewOptions) (*api.Pullrequest, error) {
 	client := &http.Client{}
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
@@ -63,7 +62,12 @@ func viewPullrequest(opts *ViewOptions) (*api.Pullrequest, error) {
 		return nil, err
 	}
 
+	if len(pullrequests.Values) == 0 {
+		return nil, nil
+	}
+
 	prEndpoint := fmt.Sprintf("%s/%d", endpoint, pullrequests.Values[0].Id)
+
 	prReq, err := http.NewRequest("GET", prEndpoint, nil)
 	prReq.Header.Add("Accept", "application/json")
 	prReq.Header.Add("Authorization", authHeaderValue)
