@@ -70,6 +70,7 @@ var ListCmd = &cobra.Command{
 func drawPrTable(pullrequests *api.Pullrequests) error {
 	headerData := []table.HeaderModel{
 		{Key: "Branch"},
+		{Key: "Repository"},
 		{Key: "Author"},
 		{Key: "State"},
 		{Key: "Updated"},
@@ -87,7 +88,7 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 		rowData = append(rowData, table.RowModel{
 			Id: fmt.Sprintf("%d", i+1),
 			Data: []string{
-				p.Source.Branch.Name, p.Author.Nickname, p.State, p.Updated_On,
+				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, p.State, p.Updated_On,
 			},
 			Focused: focused,
 			Link:    &p.Links.Html.Href,
@@ -104,7 +105,4 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
 	ListCmd.Flags().StringVarP(&opts.authorFilter, "author", "a", "", "Author name match filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-
-	ListCmd.MarkFlagRequired("workspace")
-	ListCmd.MarkFlagRequired("repo")
 }

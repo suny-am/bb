@@ -24,8 +24,6 @@ type tableModel struct {
 
 	leftOffset int
 	topOffset  int
-
-	debug bool
 }
 
 type coordinates struct {
@@ -34,7 +32,7 @@ type coordinates struct {
 }
 
 const (
-	topOffset = 4 // offset required to register correct Y coordinate for row event ( 1 border + 1 headeing 1 border + 1 position)
+	topOffset = 3 // offset required to register correct Y coordinate for row event ( 1 border + 1 heading + 1 border )
 )
 
 func (tm tableModel) Init() tea.Cmd {
@@ -73,8 +71,6 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if tm.rowData[tm.focusedRow].Link != nil {
 				openLink(*tm.rowData[tm.focusedRow].Link)
 			}
-		case "i":
-			tm.debug = !tm.debug
 		}
 
 	case tea.MouseMsg:
@@ -130,21 +126,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (tm tableModel) View() string {
-	var s string
-	if tm.debug {
-		s = fmt.Sprintf("width: %d, height: %d leftOffset: %d, topOffset: %d, focusedRow: %d, X: %d, Y: %d",
-
-			tm.windowWidth,
-			tm.windowHeight,
-			tm.leftOffset,
-			tm.topOffset,
-			tm.focusedRow,
-			tm.coordinates.x,
-			tm.coordinates.y)
-	}
-	s = fmt.Sprintf("%s\n%s", s, tm.table.String())
-
-	return s
+	return tm.table.String()
 }
 
 func Draw(headerData []HeaderModel, rowData []RowModel) {
@@ -160,7 +142,6 @@ func Draw(headerData []HeaderModel, rowData []RowModel) {
 		height,
 		0,
 		0,
-		true,
 	}
 
 	p := tea.NewProgram(tm,
