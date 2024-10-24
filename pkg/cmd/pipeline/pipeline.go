@@ -19,51 +19,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package pipeline
 
 import (
-	"context"
-	"os"
-
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/pkg/cmd/code"
-	"github.com/suny-am/bb/pkg/cmd/pipeline"
-	"github.com/suny-am/bb/pkg/cmd/pr"
-	"github.com/suny-am/bb/pkg/cmd/repo"
+	"github.com/suny-am/bb/pkg/cmd/pipeline/list"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "bitbucket-cli",
-	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
-	Long: `This CLI enables shell interaction with various
-Bitbucket Cloud resources.
-
-Fetch personal commit history, workspace statistics, branch activity,
-Pull Request information and much more, all from your terminal.`,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		CredProvider := keyring.NewCredentialsProvider()
-		credentials, err := CredProvider.GetCredentials()
-		if err != nil {
-			return err
-		}
-
-		ctx := context.WithValue(cmd.Context(), keyring.CredentialsKey{}, credentials)
-		cmd.SetContext(ctx)
-		return nil
-	},
-}
-
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+var PipelineCmd = &cobra.Command{
+	Use:   "pipeline",
+	Short: "Bitbucket Pipeline informaton",
+	Long: `Use this command to get general information about public 
+or workspace repository pipelines.`,
 }
 
 func init() {
-	rootCmd.AddCommand(repo.RepoCmd)
-	rootCmd.AddCommand(pr.PrCmd)
-	rootCmd.AddCommand(pipeline.PipelineCmd)
-	rootCmd.AddCommand(code.CodeCmd)
+	PipelineCmd.AddCommand(list.ListCmd)
 }
