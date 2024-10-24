@@ -30,9 +30,9 @@ func GetUsername() (string, error) {
 			return "", errors.New("config not found in $PATH")
 		}
 
-		configFilePath = fmt.Sprintf("%s/hosts.yml", paths[configIndex])
+		configFilePath = fmt.Sprintf("%s/config.yml", paths[configIndex])
 	} else {
-		configFilePath = fmt.Sprintf("%s/.config/bitbucket-cli/hosts.yml", home)
+		configFilePath = fmt.Sprintf("%s/.config/bitbucket-cli/config.yml", home)
 	}
 
 	buffer, err := os.ReadFile(configFilePath)
