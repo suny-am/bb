@@ -69,6 +69,8 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 			state = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000")).Render(p.State.Result.Name)
 		case "SUCCESSFUL":
 			state = lipgloss.NewStyle().Foreground(lipgloss.Color("#119911")).Render(p.State.Result.Name)
+		default:
+			state = p.State.Result.Name
 		}
 
 		rowData = append(rowData, table.RowModel{
