@@ -56,6 +56,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		{Key: "Creator"},
 		{Key: "Created"},
 		{Key: "Completed"},
+		{Key: "Error"},
 		{Key: "State"},
 	}
 	rowData := []table.RowModel{}
@@ -80,8 +81,10 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 				p.Creator.Display_Name,
 				p.Created_On,
 				p.Completed_On,
+				p.State.Result.Error.Message,
 				state,
 			},
+			Link: &p.Links.Html.Href,
 		})
 	}
 

@@ -30,8 +30,15 @@ type PipelineState struct {
 }
 
 type PipelineResult struct {
-	Name string
-	Type string
+	Name  string
+	Type  string
+	Error PipelineError
+}
+
+type PipelineError struct {
+	Type    string
+	Key     string
+	Message string
 }
 
 type Configuration_Source struct {

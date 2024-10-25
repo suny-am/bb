@@ -194,6 +194,7 @@ func genTable(headerData []HeaderModel, rowData []RowModel, width int, height in
 }
 
 func openLink(link string) {
+	fmt.Println(link)
 	if err := exec.Command("open", link).Start(); err != nil {
 		fmt.Println("Could not open link: ", link)
 	}
