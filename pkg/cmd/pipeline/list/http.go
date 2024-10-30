@@ -16,6 +16,7 @@ func getPipelines(opts *ListOptions) (*api.Pipelines, error) {
 	var pipelines api.Pipelines
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+
 	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pipelines", opts.workspace, opts.repository)
 
 	var pageLength int

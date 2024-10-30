@@ -7,6 +7,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
 )
@@ -94,10 +95,17 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		ListCmd.MarkFlagRequired("workspace")
+		workspaceDefaultValue = ""
+	} else {
+		fmt.Println(defaultWorkspace)
+		workspaceDefaultValue = defaultWorkspace
+	}
+	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-
-	ListCmd.MarkFlagRequired("workspace")
 	ListCmd.MarkFlagRequired("repository")
 }

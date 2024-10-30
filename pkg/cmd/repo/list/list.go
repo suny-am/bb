@@ -28,6 +28,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
 )
@@ -108,7 +109,14 @@ func drawRepoTable(repos *api.Repositories) error {
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		workspaceDefaultValue = ""
+	} else {
+		workspaceDefaultValue = defaultWorkspace
+	}
+	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
 }

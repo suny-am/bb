@@ -27,6 +27,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
 )
@@ -37,6 +38,7 @@ type PrListOptions struct {
 	repository   string
 	titleFilter  string
 	authorFilter string
+	user         bool
 	limit        int
 }
 
@@ -88,7 +90,7 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 		rowData = append(rowData, table.RowModel{
 			Id: fmt.Sprintf("%d", i+1),
 			Data: []string{
-				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, p.State, p.Updated_On,
+				p.Source.Branch.Name, p.Author.Nickname, p.State, p.Updated_On,
 			},
 			Focused: focused,
 			Link:    &p.Links.Html.Href,
@@ -100,9 +102,18 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		workspaceDefaultValue = ""
+	} else {
+		workspaceDefaultValue = defaultWorkspace
+	}
+
+	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
 	ListCmd.Flags().StringVarP(&opts.authorFilter, "author", "a", "", "Author name match filter")
+	ListCmd.Flags().BoolVarP(&opts.user, "user", "u", false, "Get Pullrequests linked to current user")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 }
