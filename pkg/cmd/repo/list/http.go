@@ -35,7 +35,6 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 	}
 
 	endpointUrl, err := url.Parse(endpoint)
-
 	if err != nil {
 		return nil, err
 	}
@@ -61,16 +60,13 @@ func listRepos(opts *ListOptions) (*api.Repositories, error) {
 }
 
 func fetchReposRecurse(client *http.Client, req *http.Request, repositories *api.Repositories) {
-
 	resp, err := client.Do(req)
-
 	if err != nil {
 		fmt.Printf("Request Error: %s", err)
 		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		fmt.Printf("Body Parsing Error: %s", err)
 		return

@@ -7,17 +7,21 @@ import (
 	"slices"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/v2"
 )
 
-func GetUsername() (string, error) {
+var k = koanf.New(".")
+
+func LoadConfig() error {
 	var configFilePath string
 	home, homeFound := os.LookupEnv("HOME")
 
 	if !homeFound {
 		pathString, pathFound := os.LookupEnv("PATH")
 		if !pathFound {
-			return "", errors.New("no system $PATH found")
+			return errors.New("no system $PATH found")
 		}
 		paths := strings.Split(pathString, ":")
 
@@ -27,7 +31,7 @@ func GetUsername() (string, error) {
 		})
 
 		if configIndex == -1 {
-			return "", errors.New("config not found in $PATH")
+			return errors.New("config not found in $PATH")
 		}
 
 		configFilePath = fmt.Sprintf("%s/config.yml", paths[configIndex])
@@ -35,19 +39,31 @@ func GetUsername() (string, error) {
 		configFilePath = fmt.Sprintf("%s/.config/bitbucket-cli/config.yml", home)
 	}
 
-	buffer, err := os.ReadFile(configFilePath)
-	if err != nil {
-		return "", err
+	if err := k.Load(file.Provider(configFilePath), yaml.Parser()); err != nil {
+		return err
 	}
 
-	var data map[string]interface{}
+	return nil
+}
 
-	err = yaml.Unmarshal(buffer, &data)
-	if err != nil {
+func GetUsername() (string, error) {
+	if err := LoadConfig(); err != nil {
 		return "", err
 	}
-
-	username := data["user"].(string)
-
+	username := k.String("user")
+	if username == "" {
+		return "", errors.New("Could not get username from config")
+	}
 	return username, nil
+}
+
+func GetWorkspace() (string, error) {
+	if err := LoadConfig(); err != nil {
+		return "", err
+	}
+	workspace := k.String("workspace")
+	if workspace == "" {
+		return "", errors.New("Could not get workspace from config")
+	}
+	return workspace, nil
 }

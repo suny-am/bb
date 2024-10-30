@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/suny-am/bb/api"
-	"github.com/suny-am/bb/internal/config"
 )
 
 func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
@@ -20,14 +19,7 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
-	if opts.repository == "" || opts.workspace == "" {
-		username, err := config.GetUsername()
-		if err == nil && username != "" {
-			endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/pullrequests/%s", username)
-		}
-	} else {
-		endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, opts.workspace, opts.repository)
-	}
+	endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, opts.workspace, opts.repository)
 
 	if opts.titleFilter != "" {
 		endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
