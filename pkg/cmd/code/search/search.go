@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/pager"
 )
@@ -107,9 +108,17 @@ var SearchCmd = &cobra.Command{
 }
 
 func init() {
-	SearchCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		SearchCmd.MarkFlagRequired("workspace")
+		workspaceDefaultValue = ""
+	} else {
+		workspaceDefaultValue = defaultWorkspace
+	}
+
+	SearchCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	SearchCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	SearchCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Result limit")
 	SearchCmd.Flags().BoolVarP(&opts.includeSource, "source", "s", false, "Include source")
-	SearchCmd.MarkFlagRequired("workspace")
 }
