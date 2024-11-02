@@ -101,7 +101,6 @@ func init() {
 		ListCmd.MarkFlagRequired("workspace")
 		workspaceDefaultValue = ""
 	} else {
-		fmt.Println(defaultWorkspace)
 		workspaceDefaultValue = defaultWorkspace
 	}
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
