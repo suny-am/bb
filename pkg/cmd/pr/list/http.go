@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/config"
 )
 
 func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
@@ -17,15 +18,35 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 	var pullrequests api.Pullrequests
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
-	endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, opts.workspace, opts.repository)
+	var endpoint string
 
-	if opts.titleFilter != "" {
-		endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
-	} else if opts.authorFilter != "" {
-		endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.authorFilter)
-		endpoint = strings.ReplaceAll(endpoint, " ", "%20")
+	if opts.repository == "" {
+
+		user, err := config.GetUsername()
+		if err != nil {
+			return nil, err
+		}
+		endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/pullrequests/%s", user)
+	} else {
+
+		workspace, err := config.GetWorkspace()
+		if err != nil {
+			if opts.workspace == "" {
+				return nil, err
+			}
+			workspace = opts.workspace
+		}
+
+		endpoint = "https://api.bitbucket.org/2.0/repositories"
+		endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, workspace, opts.repository)
+
+		if opts.titleFilter != "" {
+			endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
+		} else if opts.authorFilter != "" {
+			endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.authorFilter)
+			endpoint = strings.ReplaceAll(endpoint, " ", "%20")
+		}
 	}
 
 	var pageLength int
