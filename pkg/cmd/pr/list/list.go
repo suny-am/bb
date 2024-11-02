@@ -38,7 +38,6 @@ type PrListOptions struct {
 	repository   string
 	titleFilter  string
 	authorFilter string
-	user         bool
 	limit        int
 }
 
@@ -114,6 +113,5 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
 	ListCmd.Flags().StringVarP(&opts.authorFilter, "author", "a", "", "Author name match filter")
-	ListCmd.Flags().BoolVarP(&opts.user, "user", "u", false, "Get Pullrequests linked to current user")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 }
