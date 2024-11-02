@@ -30,6 +30,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/textview"
 	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
@@ -115,7 +116,15 @@ func drawRepoView(repo *api.Repository) {
 }
 
 func init() {
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		ViewCmd.MarkFlagRequired("workspace")
+		workspaceDefaultValue = ""
+	} else {
+		workspaceDefaultValue = defaultWorkspace
+	}
+
 	ViewCmd.AddCommand(forks.ForksCmd)
-	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
-	ViewCmd.MarkFlagRequired("workspace")
+	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }
