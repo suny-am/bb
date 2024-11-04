@@ -102,6 +102,26 @@ func fetchPullrequestsRecurse(client *http.Client, req *http.Request, pullreques
 		return
 	}
 
+	for i := range particalPullrequests.Values {
+		p := &particalPullrequests.Values[i]
+		link := p.Links.Self.Href
+
+		singlePrReq, err := http.NewRequest("GET", link, nil)
+		singlePrReq.Header.Add("Authorization", req.Header["Authorization"][0])
+		if err == nil {
+			singlePrResp, err := client.Do(singlePrReq)
+			if err == nil {
+				body, err := io.ReadAll(singlePrResp.Body)
+				if err == nil {
+					var singlePullrequest api.Pullrequest
+					if err := json.Unmarshal([]byte(body), &singlePullrequest); err == nil {
+						p.Participants = append(p.Participants, singlePullrequest.Participants...)
+					}
+				}
+			}
+		}
+	}
+
 	if particalPullrequests.Values != nil {
 		pullrequests.Values = append(pullrequests.Values, particalPullrequests.Values...)
 		if particalPullrequests.Next != "" {

@@ -25,6 +25,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
@@ -73,6 +74,7 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 		{Key: "Branch"},
 		{Key: "Repository"},
 		{Key: "Author"},
+		{Key: "Approvals"},
 		{Key: "State"},
 		{Key: "Updated"},
 	}
@@ -86,10 +88,26 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 			focused = false
 		}
 
+		approvalCount := 0
+
+		for _, pcp := range p.Participants {
+			if pcp.Approved {
+				approvalCount++
+			}
+		}
+
+		var approvalCountColor lipgloss.Color
+		if approvalCount > 0 {
+			approvalCountColor = lipgloss.Color("#22dd99")
+		} else {
+			approvalCountColor = lipgloss.Color("#ff0000")
+		}
+		approvalCountText := lipgloss.NewStyle().Foreground(approvalCountColor).Render(fmt.Sprintf("%d", approvalCount))
+
 		rowData = append(rowData, table.RowModel{
 			Id: fmt.Sprintf("%d", i+1),
 			Data: []string{
-				p.Source.Branch.Name, p.Author.Nickname, p.State, p.Updated_On,
+				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, approvalCountText, p.State, p.Updated_On,
 			},
 			Focused: focused,
 			Link:    &p.Links.Html.Href,
