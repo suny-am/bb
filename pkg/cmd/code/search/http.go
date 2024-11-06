@@ -15,7 +15,15 @@ import (
 func searchCode(opts *SearchOptions) (*api.CodeSearchResponse, error) {
 	client := http.Client{}
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/workspaces/%s/search/code?search_query=%s", opts.workspace, strings.ReplaceAll(opts.searchParam, " ", "%20"))
+	searchQuery := strings.ReplaceAll(opts.searchParam, " ", "%20")
+	if opts.repository != "" {
+		searchQuery = fmt.Sprintf("%s+repo:%s",
+			searchQuery,
+			opts.repository)
+	}
+	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/workspaces/%s/search/code?search_query=%s",
+		opts.workspace,
+		searchQuery)
 	req, err := http.NewRequest("GET", endpoint, nil)
 	req.Header.Add("Authorization", authHeaderValue)
 	req.Header.Add("Accept", "application/json")
