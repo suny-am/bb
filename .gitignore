@@ -3,3 +3,6 @@
 
 # goreleaser
 dist/
+
+# Misc
+.DS_Store
