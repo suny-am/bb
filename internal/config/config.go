@@ -67,3 +67,14 @@ func GetWorkspace() (string, error) {
 	}
 	return workspace, nil
 }
+
+func GetSpinnerStyle() (*int, error) {
+	if err := LoadConfig(); err != nil {
+		return nil, err
+	}
+	spinnerStyle := k.Int("spinner")
+	if spinnerStyle == 0 {
+		return nil, errors.New("Could not get spinner style from config")
+	}
+	return &spinnerStyle, nil
+}

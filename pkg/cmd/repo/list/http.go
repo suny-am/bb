@@ -11,7 +11,7 @@ import (
 	"github.com/suny-am/bb/api"
 )
 
-func listRepos(opts *ListOptions) (*api.Repositories, error) {
+func getRepos(opts *ListOptions) (*api.Repositories, error) {
 	client := &http.Client{}
 	var repositories api.Repositories
 

@@ -32,6 +32,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/textview"
 	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
 )
@@ -58,10 +59,18 @@ var ViewCmd = &cobra.Command{
 			return errors.New("only one <repository> argument is allowed")
 		}
 
-		opts.repository = args[0]
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		var repo *api.Repository
+		var err error
 
-		repo, err := viewRepo(&opts)
+		go func() {
+			opts.repository = args[0]
+			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+			repo, err = viewRepo(&opts)
+			spinner.Stop()
+		}()
+
+		spinner.Start("Fetching repository")
+
 		if err != nil {
 			fmt.Println("Could not get reposiotry", err)
 		}

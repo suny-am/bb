@@ -44,12 +44,14 @@ Pull Request information and much more, all from your terminal.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		CredProvider := keyring.NewCredentialsProvider()
 		credentials, err := CredProvider.GetCredentials()
+
+		ctx := context.WithValue(cmd.Context(), keyring.CredentialsKey{}, credentials)
+		cmd.SetContext(ctx)
+
 		if err != nil {
 			return err
 		}
 
-		ctx := context.WithValue(cmd.Context(), keyring.CredentialsKey{}, credentials)
-		cmd.SetContext(ctx)
 		return nil
 	},
 }

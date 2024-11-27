@@ -58,20 +58,25 @@ var ViewCmd = &cobra.Command{
 			return errors.New("only one <pullrequest> argument is allowed")
 		}
 
-		opts.pullrequest = args[0]
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		var pullrequest *api.Pullrequest
+		var err error
 
-		pr, err := getPullrequest(&opts)
+		go func() {
+			opts.pullrequest = args[0]
+			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+			pullrequest, err = getPullrequest(&opts)
+		}()
+
 		if err != nil {
 			return err
 		}
 
-		if pr == nil {
+		if pullrequest == nil {
 			fmt.Println("No results")
 			return nil
 		}
 
-		viewPullrequest(pr)
+		viewPullrequest(pullrequest)
 
 		return nil
 	},

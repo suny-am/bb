@@ -9,6 +9,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/table"
 )
 
@@ -31,9 +32,17 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		var pipelines *api.Pipelines
+		var err error
 
-		pipelines, err := getPipelines(&opts)
+		go func() {
+			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+			pipelines, err = getPipelines(&opts)
+			spinner.Stop()
+		}()
+
+		spinner.Start("Fetching pipelines")
+
 		if err != nil {
 			return err
 		}
