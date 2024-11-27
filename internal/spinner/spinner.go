@@ -78,7 +78,7 @@ func (m spinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c":
+		case "ctrl+c", "q", "esc":
 			m.stopping = true
 			return m, tea.Quit
 		}
