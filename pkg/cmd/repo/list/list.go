@@ -30,6 +30,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/table"
 )
 
@@ -52,9 +53,17 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		var repos *api.Repositories
+		var err error
 
-		repos, err := listRepos(&opts)
+		go func() {
+			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+			repos, err = getRepos(&opts)
+			spinner.Stop()
+		}()
+
+		spinner.Start("Fetching repositories")
+
 		if err != nil {
 			return err
 		}
