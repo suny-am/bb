@@ -28,6 +28,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/pkg/cmd/code"
+	"github.com/suny-am/bb/pkg/cmd/configure"
 	"github.com/suny-am/bb/pkg/cmd/pipeline"
 	"github.com/suny-am/bb/pkg/cmd/pr"
 	"github.com/suny-am/bb/pkg/cmd/repo"
@@ -68,4 +69,5 @@ func init() {
 	rootCmd.AddCommand(pr.PrCmd)
 	rootCmd.AddCommand(pipeline.PipelineCmd)
 	rootCmd.AddCommand(code.CodeCmd)
+	rootCmd.AddCommand(configure.ConfigureCmd)
 }
