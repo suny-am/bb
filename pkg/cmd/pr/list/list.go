@@ -35,15 +35,24 @@ import (
 )
 
 type PrListOptions struct {
-	credentials  string
-	workspace    string
-	repository   string
-	titleFilter  string
-	authorFilter string
-	limit        int
+	credentials   string
+	workspace     string
+	repository    string
+	titleFilter   string
+	creatorFilter string
+	stateFilter   string
+	approvals     int
+	limit         int
 }
 
-var opts PrListOptions
+var (
+	approvalCountStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#22dd99"))
+	commentCountStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffcc00"))
+	zeroCountStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
+
+	opts                PrListOptions
+	approvalCountFilter bool = false
+)
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
@@ -82,7 +91,8 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 	headerData := []table.HeaderModel{
 		{Key: "Branch"},
 		{Key: "Repository"},
-		{Key: "Author"},
+		{Key: "Creator"},
+		{Key: "Comments"},
 		{Key: "Approvals"},
 		{Key: "State"},
 		{Key: "Updated"},
@@ -105,18 +115,28 @@ func drawPrTable(pullrequests *api.Pullrequests) error {
 			}
 		}
 
-		var approvalCountColor lipgloss.Color
-		if approvalCount > 0 {
-			approvalCountColor = lipgloss.Color("#22dd99")
-		} else {
-			approvalCountColor = lipgloss.Color("#ff0000")
+		if opts.approvals >= 0 && approvalCount > opts.approvals {
+			continue
 		}
-		approvalCountText := lipgloss.NewStyle().Foreground(approvalCountColor).Render(fmt.Sprintf("%d", approvalCount))
+
+		var approvalCountText string
+		if approvalCount > 0 {
+			approvalCountText = approvalCountStyle.Render(fmt.Sprintf("%d", approvalCount))
+		} else {
+			approvalCountText = zeroCountStyle.Render(fmt.Sprintf("%d", approvalCount))
+		}
+
+		var commentCountText string
+		if p.Comment_Count > 0 {
+			commentCountText = commentCountStyle.Render(fmt.Sprintf("%d", p.Comment_Count))
+		} else {
+			commentCountText = zeroCountStyle.Render(fmt.Sprintf("%d", p.Comment_Count))
+		}
 
 		rowData = append(rowData, table.RowModel{
 			Id: fmt.Sprintf("%d", i+1),
 			Data: []string{
-				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, approvalCountText, p.State, p.Updated_On,
+				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, commentCountText, approvalCountText, p.State, p.Updated_On,
 			},
 			Focused: focused,
 			Link:    &p.Links.Html.Href,
@@ -139,6 +159,8 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
-	ListCmd.Flags().StringVarP(&opts.authorFilter, "author", "a", "", "Author name match filter")
+	ListCmd.Flags().StringVarP(&opts.creatorFilter, "creator", "c", "", "Creator match filter")
+	ListCmd.Flags().StringVarP(&opts.stateFilter, "state", "s", "", "Pullrequest state filter")
+	ListCmd.Flags().IntVarP(&opts.approvals, "approvals", "a", -1, "Approvals count filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 }
