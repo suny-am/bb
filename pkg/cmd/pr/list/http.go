@@ -19,6 +19,26 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 
+	endpoint, err := generateEndpoint(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", endpoint.String(), nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", authHeaderValue)
+
+	fetchPullrequestsRecurse(client, req, &pullrequests)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pullrequests, nil
+}
+
+func generateEndpoint(opts *PrListOptions) (*url.URL, error) {
 	var endpoint string
 
 	if opts.repository == "" {
@@ -43,10 +63,14 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 
 		if opts.titleFilter != "" {
 			endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
-		} else if opts.authorFilter != "" {
-			endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.authorFilter)
+		} else if opts.creatorFilter != "" {
+			endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.creatorFilter)
 			endpoint = strings.ReplaceAll(endpoint, " ", "%20")
 		}
+	}
+
+	if opts.stateFilter != "" {
+		endpoint = fmt.Sprintf("%s?q=state=\"%s\"", endpoint, opts.stateFilter)
 	}
 
 	var pageLength int
@@ -68,18 +92,7 @@ func listPullrequests(opts *PrListOptions) (*api.Pullrequests, error) {
 		endpointUrl.RawQuery = query.Encode()
 	}
 
-	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", authHeaderValue)
-
-	fetchPullrequestsRecurse(client, req, &pullrequests)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &pullrequests, nil
+	return endpointUrl, nil
 }
 
 func fetchPullrequestsRecurse(client *http.Client, req *http.Request, pullrequests *api.Pullrequests) {
