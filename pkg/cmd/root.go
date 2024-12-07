@@ -30,8 +30,8 @@ import (
 	"github.com/suny-am/bb/pkg/cmd/code"
 	"github.com/suny-am/bb/pkg/cmd/configure"
 	"github.com/suny-am/bb/pkg/cmd/pipeline"
-	"github.com/suny-am/bb/pkg/cmd/pr"
-	"github.com/suny-am/bb/pkg/cmd/repo"
+	"github.com/suny-am/bb/pkg/cmd/pullrequest"
+	"github.com/suny-am/bb/pkg/cmd/repository"
 )
 
 var rootCmd = &cobra.Command{
@@ -65,9 +65,10 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(repo.RepoCmd)
-	rootCmd.AddCommand(pr.PrCmd)
+	rootCmd.AddCommand(repository.RepositoryCmd)
+	rootCmd.AddCommand(pullrequest.PullrequestCmd)
 	rootCmd.AddCommand(pipeline.PipelineCmd)
 	rootCmd.AddCommand(code.CodeCmd)
 	rootCmd.AddCommand(configure.ConfigureCmd)
+	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug mode")
 }
