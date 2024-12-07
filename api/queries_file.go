@@ -1,11 +1,11 @@
 package api
 
 type FileMetaResponse struct {
-	Path         string
 	Commit       Commit
+	Links        Links
+	Path         string
 	Type         string
 	Escaped_path string
-	Size         int
 	Mimetype     string
-	Links        Links
+	Size         int
 }

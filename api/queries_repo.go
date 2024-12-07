@@ -2,29 +2,28 @@ package api
 
 type (
 	Repositories struct {
-		Size     int
-		Page     int
 		Previous string
 		Next     string
 		Values   []Repository
+		Size     int
+		Page     int
 	}
 	Repository struct {
-		Description string
-		Name        string
-		Size        int
-		Language    string
+		Links       Links
+		Owner       User
 		Project     Type
+		Mainbranch  Type
+		Language    string
 		Fork_Policy string
 		Full_Name   string
+		Description string
+		Name        string
+		Readme      string
+		Created_On  string
+		Updated_On  string
+		Size        int
 		Is_Private  bool
 		Has_Wiki    bool
-		Owner       User
-		Mainbranch  Type
-		Links       Links
-		Readme      string
-
-		Created_On string
-		Updated_On string
 	}
 	Type struct {
 		Name string

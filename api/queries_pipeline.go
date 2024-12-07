@@ -1,26 +1,26 @@
 package api
 
 type Pipelines struct {
-	Size     int
-	Page     int
 	Previous string
 	Next     string
 	Values   []Pipeline
+	Size     int
+	Page     int
 }
 
 type Pipeline struct {
+	Target                Branch
+	Links                 Links
+	State                 PipelineState
+	Creator               User
 	Type                  string
 	UUID                  string
-	Build_Number          int
-	Creator               User
-	Repository            Repository
-	Target                Branch
-	State                 PipelineState
 	Created_On            string
 	Completed_On          string
-	Build_Seconds_Used    int
 	Configuration_Sources []Configuration_Source
-	Links                 Links
+	Repository            Repository
+	Build_Number          int
+	Build_Seconds_Used    int
 }
 
 type PipelineState struct {

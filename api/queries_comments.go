@@ -5,21 +5,21 @@ type Comments struct {
 }
 
 type Comment struct {
-	Id         int
+	Links      Links
+	User       User
+	Content    Content
 	Created_On string
 	Updated_On string
-	Content    Content
-	User       User
-	Deleted    bool
 	Inline     Inline
+	Id         int
+	Deleted    bool
 	Pending    bool
-	Links      Links
 }
 
 type Inline struct {
+	Path string
 	From int
 	To   int
-	Path string
 }
 
 type Content struct {

@@ -1,20 +1,20 @@
 package api
 
 type CodeSearchResponse struct {
+	Next              string
+	Values            []CodeItem
 	Size              int
 	Page              int
 	PageLen           int
-	Next              string
 	Query_Substituted bool
-	Values            []CodeItem
 }
 
 type CodeItem struct {
+	File                File
 	Type                string
-	Content_match_count int
 	Content_matches     []ContentMatch
 	Patch_matches       []PathMatch
-	File                File
+	Content_match_count int
 }
 
 type ContentMatch struct {
@@ -22,8 +22,8 @@ type ContentMatch struct {
 }
 
 type Line struct {
-	Line     int
 	Segments []Segment
+	Line     int
 }
 
 type Segment struct {
@@ -31,8 +31,7 @@ type Segment struct {
 	Match bool
 }
 
-type PathMatch struct {
-}
+type PathMatch struct{}
 
 type File struct {
 	Path   string
