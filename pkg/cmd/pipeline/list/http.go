@@ -1,3 +1,24 @@
+/*
+Copyright © 2024 Calle Sandberg <visualarea.1@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 package list
 
 import (
@@ -8,53 +29,43 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/http2"
+	"github.com/suny-am/bb/internal/spinner"
+	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getPipelines(opts *ListOptions) (*api.Pipelines, error) {
-	client := &http.Client{}
+func getPipelines(opts *ListOptions, cmd *cobra.Command) (*api.Pipelines, error) {
 	var pipelines api.Pipelines
+	var err error
 
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+	go func() {
+		err = get(&pipelines, cmd, opts)
+		debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
+		if debug {
+			textinput.ConfirmKey()
+		}
+		spinner.Stop()
+	}()
 
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pipelines", opts.workspace, opts.repository)
+	spinner.Start("Searching pipelines")
 
-	var pageLength int
-
-	if opts.limit > 100 {
-		pageLength = 100
-	} else {
-		pageLength = opts.limit
-	}
-
-	endpointUrl, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	if opts.limit > 0 {
-		query := endpointUrl.Query()
-		query.Add("pagelen", strconv.Itoa(pageLength))
-		endpointUrl.RawQuery = query.Encode()
-	}
-
-	endpoint = fmt.Sprintf("%s?sort=-created_on", endpointUrl.String())
-
-	req, err := http.NewRequest("GET", endpoint, nil)
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", authHeaderValue)
-
-	fetchPipelinesRecurse(client, req, &pipelines)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &pipelines, nil
+	return &pipelines, err
 }
 
-func fetchPipelinesRecurse(client *http.Client, req *http.Request, pipelines *api.Pipelines) {
+func get(pipelines *api.Pipelines, cmd *cobra.Command, opts *ListOptions) error {
+	client := http2.Init(cmd)
+	req, err := generateRequest(opts)
+	if err != nil {
+		return err
+	}
+
+	fetchPipelinesRecurse(client, req, pipelines)
+	return nil
+}
+
+func fetchPipelinesRecurse(client *http2.Client, req *http.Request, pipelines *api.Pipelines) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Request Error: %s", err)
@@ -90,4 +101,38 @@ func fetchPipelinesRecurse(client *http.Client, req *http.Request, pipelines *ap
 			fetchPipelinesRecurse(client, newReq, pipelines)
 		}
 	}
+}
+
+func generateRequest(opts *ListOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+
+	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pipelines", opts.workspace, opts.repository)
+
+	var pageLength int
+
+	if opts.limit > 100 {
+		pageLength = 100
+	} else {
+		pageLength = opts.limit
+	}
+
+	endpointUrl, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.limit > 0 {
+		query := endpointUrl.Query()
+		query.Add("pagelen", strconv.Itoa(pageLength))
+		endpointUrl.RawQuery = query.Encode()
+	}
+
+	endpoint = fmt.Sprintf("%s?sort=-created_on", endpointUrl.String())
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", authHeaderValue)
+
+	return req, err
 }
