@@ -26,52 +26,70 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/http2"
+	"github.com/suny-am/bb/internal/spinner"
+	"github.com/suny-am/bb/internal/textinput"
 )
 
-func viewRepo(opts *ViewOptions) (*api.Repository, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, opts.repository)
-
-	client := &http.Client{}
-
-	repoReq, err := http.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	repoReq.Header.Add("Accept", "application/json")
-	repoReq.Header.Add("Authorization", authHeaderValue)
-
-	resp, err := client.Do(repoReq)
-	if err != nil {
-		return nil, err
-	}
-
+func getRepo(opts *ViewOptions, cmd *cobra.Command) (*api.Repository, error) {
 	var repository api.Repository
+	var err error
+
+	go func() {
+		err = get(&repository, cmd, opts)
+		debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
+		if debug {
+			textinput.ConfirmKey()
+		}
+		spinner.Stop()
+	}()
+
+	spinner.Start("Searching repositories")
+
+	return &repository, err
+}
+
+func get(repository *api.Repository, cmd *cobra.Command, opts *ViewOptions) error {
+	client := http2.Init(cmd)
+	req, err := generateRequest(opts)
+	if err != nil {
+		return err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := json.Unmarshal([]byte(body), &repository); err != nil {
-		return nil, err
+		return err
 	}
 
-	endpoint = fmt.Sprintf("%s/src/master/README", endpoint)
+	req.URL, err = req.URL.Parse(fmt.Sprintf("%s/src/master/README", req.URL))
+	if err != nil {
+		return err
+	}
 
-	readmeReq, _ := http.NewRequest("GET", endpoint, nil)
-	readmeReq.Header.Add("Authorization", authHeaderValue)
-	readmeResp, err := client.Do(readmeReq)
+	readmeResp, err := client.Do(req)
+
 	var readmeBody []byte
 	if err != nil || readmeResp.StatusCode != 200 {
-		endpoint = strings.ReplaceAll(endpoint, "README", "README.md")
-		readmeReq, _ = http.NewRequest("GET", endpoint, nil)
-		readmeReq.Header.Add("Authorization", authHeaderValue)
-		readmeResp, err = client.Do(readmeReq)
+		req.URL, err = url.Parse(strings.Replace(req.URL.String(), "README", "README.md", 1))
+		if err != nil {
+			return err
+		}
+
+		readmeResp, err = client.Do(req)
 		if err != nil || readmeResp.StatusCode != 200 {
 			readmeBody = nil
 		} else {
@@ -84,5 +102,17 @@ func viewRepo(opts *ViewOptions) (*api.Repository, error) {
 			repository.Readme = readmeText
 		}
 	}
-	return &repository, nil
+
+	return nil
+}
+
+func generateRequest(opts *ViewOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, opts.repository)
+	req, err := http.NewRequest("GET", endpoint, nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", authHeaderValue)
+
+	return req, err
 }

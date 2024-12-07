@@ -30,7 +30,6 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/table"
 )
 
@@ -50,8 +49,7 @@ var (
 	commentCountStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffcc00"))
 	zeroCountStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
 
-	opts                PrListOptions
-	approvalCountFilter bool = false
+	opts PrListOptions
 )
 
 var ListCmd = &cobra.Command{
@@ -64,17 +62,8 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		var pullrequests *api.Pullrequests
-		var err error
-
-		go func() {
-			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
-			pullrequests, err = listPullrequests(&opts)
-			spinner.Stop()
-		}()
-
-		spinner.Start("Fetching pullrequests")
-
+		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		pullrequests, err := getPullrequests(&opts, cmd)
 		if err != nil {
 			return err
 		}

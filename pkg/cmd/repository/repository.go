@@ -19,22 +19,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package pr
+package repository
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bb/pkg/cmd/pr/list"
-	"github.com/suny-am/bb/pkg/cmd/pr/view"
+	"github.com/suny-am/bb/pkg/cmd/repository/list"
+	"github.com/suny-am/bb/pkg/cmd/repository/view"
 )
 
-var PrCmd = &cobra.Command{
-	Use:   "pr",
-	Short: "Bitbucket Pullrequest information",
+var RepositoryCmd = &cobra.Command{
+	Use:   "repo",
+	Short: "Bitbucket Repository information",
 	Long: `Use this command to get general information about public 
-or workspace pullrequests.`,
+or workspace repositories.`,
 }
 
 func init() {
-	PrCmd.AddCommand(list.ListCmd)
-	PrCmd.AddCommand(view.ViewCmd)
+	RepositoryCmd.AddCommand(list.ListCmd)
+	RepositoryCmd.AddCommand(view.ViewCmd)
 }

@@ -32,7 +32,6 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
 )
 
 type ViewOptions struct {
@@ -58,15 +57,9 @@ var ViewCmd = &cobra.Command{
 			return errors.New("only one <pullrequest> argument is allowed")
 		}
 
-		var pullrequest *api.Pullrequest
-		var err error
-
-		go func() {
-			opts.pullrequest = args[0]
-			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
-			pullrequest, err = getPullrequest(&opts)
-		}()
-
+		opts.pullrequest = args[0]
+		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		pullrequest, err := getPullrequest(&opts, cmd)
 		if err != nil {
 			return err
 		}
@@ -145,12 +138,10 @@ func viewPullrequest(pr *api.Pullrequest) {
 }
 
 func init() {
-	ViewCmd.AddCommand(forks.ForksCmd)
-
 	var workspaceDefaultValue string
 	defaultWorkspace, err := config.GetWorkspace()
 	if err != nil {
-		ViewCmd.MarkFlagRequired("workspace")
+		_ = ViewCmd.MarkFlagRequired("workspace")
 		workspaceDefaultValue = ""
 	} else {
 		workspaceDefaultValue = defaultWorkspace
@@ -158,5 +149,5 @@ func init() {
 
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ViewCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
-	ViewCmd.MarkFlagRequired("repo")
+	_ = ViewCmd.MarkFlagRequired("repo")
 }

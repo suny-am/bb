@@ -32,9 +32,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/textview"
-	"github.com/suny-am/bb/pkg/cmd/repo/view/forks"
 )
 
 type ViewOptions struct {
@@ -59,18 +57,9 @@ var ViewCmd = &cobra.Command{
 			return errors.New("only one <repository> argument is allowed")
 		}
 
-		var repo *api.Repository
-		var err error
-
-		go func() {
-			opts.repository = args[0]
-			opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
-			repo, err = viewRepo(&opts)
-			spinner.Stop()
-		}()
-
-		spinner.Start("Fetching repository")
-
+		opts.repository = args[0]
+		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		repo, err := getRepo(&opts, cmd)
 		if err != nil {
 			fmt.Println("Could not get reposiotry", err)
 		}
@@ -128,12 +117,11 @@ func init() {
 	var workspaceDefaultValue string
 	defaultWorkspace, err := config.GetWorkspace()
 	if err != nil {
-		ViewCmd.MarkFlagRequired("workspace")
+		_ = ViewCmd.MarkFlagRequired("workspace")
 		workspaceDefaultValue = ""
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.AddCommand(forks.ForksCmd)
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }

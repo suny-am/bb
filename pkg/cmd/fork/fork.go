@@ -19,22 +19,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package repo
+package fork
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/suny-am/bb/pkg/cmd/repo/list"
-	"github.com/suny-am/bb/pkg/cmd/repo/view"
+	"github.com/suny-am/bb/pkg/cmd/fork/list"
 )
 
-var RepoCmd = &cobra.Command{
-	Use:   "repo",
-	Short: "Bitbucket repository information",
-	Long: `Use this command to get general information about public 
-or workspace repositories.`,
+var ForkCmd = &cobra.Command{
+	Use:   "fork",
+	Short: "Bitbucket repository forks information",
+	Long: `Use this command to get general information about forks
+  of a given repository`,
 }
 
 func init() {
-	RepoCmd.AddCommand(list.ListCmd)
-	RepoCmd.AddCommand(view.ViewCmd)
+	ForkCmd.AddCommand(list.ListCmd)
 }

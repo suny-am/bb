@@ -28,79 +28,99 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
+	"github.com/suny-am/bb/internal/http2"
+	"github.com/suny-am/bb/internal/spinner"
+	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getPullrequest(opts *ViewOptions) (*api.Pullrequest, error) {
-	client := &http.Client{}
+func getPullrequest(opts *ViewOptions, cmd *cobra.Command) (*api.Pullrequest, error) {
+	var pullrequest api.Pullrequest
+	var err error
+	go func() {
+		err = get(&pullrequest, cmd, opts)
+		debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
+		if debug {
+			textinput.ConfirmKey()
+		}
+		spinner.Stop()
+	}()
 
+	spinner.Start("Searching pullrequests")
+	return &pullrequest, err
+}
+
+func get(pullrequest *api.Pullrequest, cmd *cobra.Command, opts *ViewOptions) error {
+	client := http2.Init(cmd)
+
+	req, err := generateRequest(opts)
+	if err != nil {
+		return err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var pullrequests api.Pullrequests
+	if err := json.Unmarshal([]byte(body), &pullrequests); err != nil {
+		return err
+	}
+
+	if len(pullrequests.Values) == 0 {
+		return nil
+	}
+
+	req.URL, err = req.URL.Parse(fmt.Sprintf("%s/%d", req.URL.String(), pullrequests.Values[0].Id))
+	if err != nil {
+		return err
+	}
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(body), &pullrequest); err != nil {
+		return err
+	}
+
+	req.URL, err = req.URL.Parse(pullrequest.Links.Comments.Href)
+	if err != nil {
+		return err
+	}
+
+	resp, _ = client.Do(req)
+	body, _ = io.ReadAll(resp.Body)
+
+	var comments api.Comments
+	if err := json.Unmarshal([]byte(body), &comments); err != nil {
+		return err
+	}
+	pullrequest.Comments = comments
+	return nil
+}
+
+func generateRequest(opts *ViewOptions) (*http.Request, error) {
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
 	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pullrequests", opts.workspace, opts.repository)
 	idEndpoint := fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.pullrequest)
 	idEndpoint = strings.ReplaceAll(idEndpoint, " ", "%20")
 
-	prIdReq, err := http.NewRequest("GET", idEndpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	prIdReq.Header.Add("Accept", "application/json")
-	prIdReq.Header.Add("Authorization", authHeaderValue)
-	resp, err := client.Do(prIdReq)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var pullrequests api.Pullrequests
-	var pullrequest api.Pullrequest
-	if err := json.Unmarshal([]byte(body), &pullrequests); err != nil {
-		return nil, err
-	}
-
-	if len(pullrequests.Values) == 0 {
-		return nil, nil
-	}
-
-	prEndpoint := fmt.Sprintf("%s/%d", endpoint, pullrequests.Values[0].Id)
-
-	prReq, err := http.NewRequest("GET", prEndpoint, nil)
-	prReq.Header.Add("Accept", "application/json")
-	prReq.Header.Add("Authorization", authHeaderValue)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err = client.Do(prReq)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal([]byte(body), &pullrequest); err != nil {
-		return nil, err
-	}
-
-	commentsReq, err := http.NewRequest("GET", pullrequest.Links.Comments.Href, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	commentsReq.Header = prReq.Header
-	resp, _ = client.Do(commentsReq)
-	body, _ = io.ReadAll(resp.Body)
-
-	var comments api.Comments
-	json.Unmarshal([]byte(body), &comments)
-	pullrequest.Comments = comments
-
-	return &pullrequest, nil
+	req, err := http.NewRequest("GET", idEndpoint, nil)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", authHeaderValue)
+	return req, err
 }
