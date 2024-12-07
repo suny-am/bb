@@ -37,7 +37,12 @@ type spinnerModel struct {
 	configureMode bool
 }
 
-type stopMessage struct{}
+type (
+	stopMessage       struct{}
+	viewUpdateMessage struct {
+		content string
+	}
+)
 
 const helpLegend = "←/↑: prev   |   →/↓: next"
 
@@ -87,6 +92,12 @@ func Stop() {
 	}
 }
 
+func AddToView(str string) {
+	if spinnerProgram != nil {
+		spinnerProgram.Send(viewUpdateMessage{str})
+	}
+}
+
 func (m *spinnerModel) initSpinner(style int) {
 	m.spinner = spinner.New()
 	m.spinner.Style = spinnerStyle
@@ -129,6 +140,10 @@ func (m spinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
+		return m, nil
+
+	case viewUpdateMessage:
+		m.message = m.message + msg.content
 		return m, nil
 
 	case stopMessage:
