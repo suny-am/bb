@@ -89,12 +89,16 @@ func Configure() {
 func Stop() {
 	if spinnerProgram != nil {
 		spinnerProgram.Send(stopMessage{})
+	} else {
+		Stop()
 	}
 }
 
 func AddToView(str string) {
 	if spinnerProgram != nil {
 		spinnerProgram.Send(viewUpdateMessage{str})
+	} else {
+		AddToView(str)
 	}
 }
 
