@@ -65,10 +65,12 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(repository.RepositoryCmd)
-	rootCmd.AddCommand(pullrequest.PullrequestCmd)
-	rootCmd.AddCommand(pipeline.PipelineCmd)
+	//	rootCmd.AddCommand(fork.ForkCmd)
 	rootCmd.AddCommand(code.CodeCmd)
 	rootCmd.AddCommand(configure.ConfigureCmd)
+	rootCmd.AddCommand(pipeline.PipelineCmd)
+	rootCmd.AddCommand(pullrequest.PullrequestCmd)
+	rootCmd.AddCommand(repository.RepositoryCmd)
+
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug mode")
 }

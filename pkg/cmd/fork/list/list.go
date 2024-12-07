@@ -23,8 +23,10 @@ package list
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 )
 
@@ -37,9 +39,9 @@ type ForksOptions struct {
 var opts ForksOptions
 
 var ListCmd = &cobra.Command{
-	Use:   "forks (TBD)",
-	Short: "View forks for a repository (TBD)",
-	Long:  `View one ore more forks for a given repository (TBD)`,
+	Use:   "list",
+	Short: "List forks for a repository (TBD)",
+	Long:  `List one ore more forks for a given repository (TBD)`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -53,18 +55,25 @@ var ListCmd = &cobra.Command{
 		opts.repository = args[0]
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
-		// TBD
-		/*
-			forks, err := getForks(&opts, cmd)
-			if err != nil {
-				return err
-			}
-		*/
+		forks, err := getForks(&opts, cmd)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("COMMAND IS WORK IN PROGRESS")
+		fmt.Println(forks)
 		return nil
 	},
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", "", "Target workspace")
-	_ = ListCmd.MarkFlagRequired("workspace")
+	var workspaceDefaultValue string
+	defaultWorkspace, err := config.GetWorkspace()
+	if err != nil {
+		_ = ListCmd.MarkFlagRequired("workspace")
+		workspaceDefaultValue = ""
+	} else {
+		workspaceDefaultValue = defaultWorkspace
+	}
+	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }
