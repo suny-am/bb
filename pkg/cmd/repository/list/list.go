@@ -58,6 +58,11 @@ var ListCmd = &cobra.Command{
 			return err
 		}
 
+		if len(repos.Values) == 0 {
+			fmt.Println(api.NoResults)
+			return nil
+		}
+
 		if err := drawRepoTable(repos); err != nil {
 			return err
 		}

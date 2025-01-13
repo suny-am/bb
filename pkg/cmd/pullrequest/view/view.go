@@ -64,8 +64,8 @@ var ViewCmd = &cobra.Command{
 			return err
 		}
 
-		if pullrequest == nil {
-			fmt.Println("No results")
+		if pullrequest.Title == "" {
+			fmt.Println(api.NoResults)
 			return nil
 		}
 

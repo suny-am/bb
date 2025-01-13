@@ -26,6 +26,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 )
@@ -58,6 +59,11 @@ var ListCmd = &cobra.Command{
 		forks, err := getForks(&opts, cmd)
 		if err != nil {
 			return err
+		}
+
+		if len(forks.Values) == 0 {
+			fmt.Println(api.NoResults)
+			return nil
 		}
 
 		fmt.Println("COMMAND IS WORK IN PROGRESS")

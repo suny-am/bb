@@ -73,7 +73,7 @@ var SearchCmd = &cobra.Command{
 		}
 
 		if len(code.Values) == 0 {
-			fmt.Println("No results")
+			fmt.Println(api.NoResults)
 			return nil
 		}
 

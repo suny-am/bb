@@ -61,10 +61,15 @@ var ViewCmd = &cobra.Command{
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		repo, err := getRepo(&opts, cmd)
 		if err != nil {
-			fmt.Println("Could not get reposiotry", err)
+			return err
 		}
 
-		drawRepoView(repo)
+		if repo.Name == "" {
+			fmt.Println(api.NoResults)
+			return nil
+		}
+
+		viewRepo(repo)
 
 		return nil
 	},
@@ -76,7 +81,7 @@ func colorAttribute(key string, value string) string {
 	return strings.Join([]string{keyStyle, valueStyle}, ": ")
 }
 
-func drawRepoView(repo *api.Repository) {
+func viewRepo(repo *api.Repository) {
 	var status string
 	if repo.Is_Private {
 		status = "Private"

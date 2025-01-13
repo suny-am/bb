@@ -75,6 +75,10 @@ func get(repository *api.Repository, cmd *cobra.Command, opts *ViewOptions) erro
 		return err
 	}
 
+	if repository.Links.Html.Href == "" {
+		return nil
+	}
+
 	req.URL, err = req.URL.Parse(fmt.Sprintf("%s/src/master/README", req.URL))
 	if err != nil {
 		return err

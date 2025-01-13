@@ -68,7 +68,12 @@ var ListCmd = &cobra.Command{
 			return err
 		}
 
-		if err := drawPrTable(pullrequests); err != nil {
+		if len(pullrequests.Values) == 0 {
+			fmt.Println(api.NoResults)
+			return nil
+		}
+
+		if err := viewPullrequests(pullrequests); err != nil {
 			return err
 		}
 
@@ -76,7 +81,7 @@ var ListCmd = &cobra.Command{
 	},
 }
 
-func drawPrTable(pullrequests *api.Pullrequests) error {
+func viewPullrequests(pullrequests *api.Pullrequests) error {
 	headerData := []table.HeaderModel{
 		{Key: "Branch"},
 		{Key: "Repository"},
