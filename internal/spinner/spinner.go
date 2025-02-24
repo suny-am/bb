@@ -11,7 +11,6 @@ import (
 )
 
 var (
-
 	// Available spinners
 	spinners = []spinner.Spinner{
 		spinner.Line,
@@ -178,7 +177,11 @@ func (m spinnerModel) View() (s string) {
 		gap = " "
 	}
 
-	s += fmt.Sprintf("\n %s%s%s\n\n", m.spinner.View(), gap, textStyle(fmt.Sprintf("%s...", m.message)))
+	s += fmt.Sprintf("\n %s%s%s\n\n",
+		m.spinner.View(),
+		gap,
+		textStyle(fmt.Sprintf("%s...", m.message)),
+	)
 
 	if m.configureMode {
 		s += fmt.Sprintf("\n%s", helpStyle.Render(helpLegend))
