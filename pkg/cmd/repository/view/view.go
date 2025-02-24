@@ -37,10 +37,10 @@ import (
 )
 
 type ViewOptions struct {
+	current     bool
 	repository  string
 	workspace   string
 	credentials string
-	current     bool
 }
 
 var opts ViewOptions
@@ -135,6 +135,6 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
+	ViewCmd.Flags().BoolVarP(&opts.current, "current", "cd", true, "Reference repository from current directory")
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory name as repository name")
 }

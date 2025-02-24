@@ -35,6 +35,7 @@ import (
 )
 
 type PrListOptions struct {
+	current       bool
 	credentials   string
 	workspace     string
 	repository    string
@@ -43,7 +44,6 @@ type PrListOptions struct {
 	stateFilter   string
 	approvals     int
 	limit         int
-	current       bool
 }
 
 var (
@@ -156,6 +156,7 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "cd", true, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
@@ -163,5 +164,4 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.stateFilter, "state", "s", "", "Pullrequest state filter")
 	ListCmd.Flags().IntVarP(&opts.approvals, "approvals", "a", -1, "Approvals count filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory as repository name")
 }
