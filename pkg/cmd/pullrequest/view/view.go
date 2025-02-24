@@ -39,6 +39,7 @@ type ViewOptions struct {
 	workspace   string
 	pullrequest string
 	credentials string
+	current     bool
 }
 
 var opts ViewOptions
@@ -148,6 +149,8 @@ func init() {
 	}
 
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ViewCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
-	_ = ViewCmd.MarkFlagRequired("repo")
+	ViewCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
+	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory as repository name")
+	ViewCmd.MarkFlagsOneRequired("repository", "current")
+	ViewCmd.MarkFlagsMutuallyExclusive("repository", "current")
 }

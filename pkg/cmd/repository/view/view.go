@@ -33,12 +33,14 @@ import (
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/textview"
+	"github.com/suny-am/bb/internal/util"
 )
 
 type ViewOptions struct {
 	repository  string
 	workspace   string
 	credentials string
+	current     bool
 }
 
 var opts ViewOptions
@@ -49,12 +51,17 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a repository in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("<repository> argument is required")
-		}
+		if opts.current {
+			opts.repository = util.GetCurrentDir()
+		} else {
 
-		if len(args) > 1 {
-			return errors.New("only one <repository> argument is allowed")
+			if len(args) < 1 {
+				return errors.New("<repository> argument is required")
+			}
+
+			if len(args) > 1 {
+				return errors.New("only one <repository> argument is allowed")
+			}
 		}
 
 		opts.repository = args[0]
@@ -129,4 +136,5 @@ func init() {
 	}
 
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory name as repository name")
 }

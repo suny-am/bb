@@ -31,6 +31,7 @@ import (
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
+	"github.com/suny-am/bb/internal/util"
 )
 
 type PrListOptions struct {
@@ -42,6 +43,7 @@ type PrListOptions struct {
 	stateFilter   string
 	approvals     int
 	limit         int
+	current       bool
 }
 
 var (
@@ -60,6 +62,10 @@ var ListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
+		}
+
+		if opts.current {
+			opts.workspace = util.GetCurrentDir()
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
@@ -157,4 +163,5 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.stateFilter, "state", "s", "", "Pullrequest state filter")
 	ListCmd.Flags().IntVarP(&opts.approvals, "approvals", "a", -1, "Approvals count filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory as repository name")
 }

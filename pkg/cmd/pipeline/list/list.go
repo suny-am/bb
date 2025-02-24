@@ -24,9 +24,7 @@ package list
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
-	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -34,6 +32,7 @@ import (
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
+	"github.com/suny-am/bb/internal/util"
 )
 
 type ListOptions struct {
@@ -41,7 +40,7 @@ type ListOptions struct {
 	workspace   string
 	repository  string
 	limit       int
-	currentRepo bool
+	current     bool
 }
 
 var opts ListOptions
@@ -56,10 +55,8 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		if opts.currentRepo {
-			path, _ := os.Getwd()
-			pathItems := strings.Split(path, "/")
-			opts.repository = pathItems[len(pathItems)-1]
+		if opts.current {
+			opts.repository = util.GetCurrentDir()
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
@@ -135,7 +132,7 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
-	ListCmd.Flags().BoolVarP(&opts.currentRepo, "current", "c", true, "Use current directory as repository name")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Use current directory as repository name")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
