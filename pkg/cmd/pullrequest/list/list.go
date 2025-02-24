@@ -65,7 +65,7 @@ var ListCmd = &cobra.Command{
 		}
 
 		if opts.current {
-			opts.workspace = util.GetCurrentDir()
+			opts.repository = util.GetCurrentDir()
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)

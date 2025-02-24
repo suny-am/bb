@@ -32,6 +32,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/util"
 )
 
 type ViewOptions struct {
@@ -50,6 +51,10 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a pullrequest in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if opts.current {
+			opts.repository = util.GetCurrentDir()
+		}
+
 		if len(args) < 1 {
 			return errors.New("<pullrequest> argument is required")
 		}
