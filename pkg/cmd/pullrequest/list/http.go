@@ -77,7 +77,8 @@ func generateRequest(opts *PrListOptions) (*http.Request, error) {
 		if err != nil {
 			return nil, err
 		}
-		endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/pullrequests/%s", user)
+		endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/workspaces/%s/pullrequests/%s",
+			opts.workspace, user)
 	} else {
 
 		workspace, err := config.GetWorkspace()
