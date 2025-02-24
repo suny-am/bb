@@ -24,6 +24,7 @@ package list
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -95,6 +96,8 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 			state = p.State.Result.Name
 		}
 
+		link := p.Repository.Links.Html.Href + "/pipelines/results/" + strconv.Itoa(p.Build_Number)
+
 		rowData = append(rowData, table.RowModel{
 			Id: fmt.Sprintf("%d", i),
 			Data: []string{
@@ -105,7 +108,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 				p.State.Result.Error.Message,
 				state,
 			},
-			Link: &p.Links.Html.Href,
+			Link: &link,
 		})
 	}
 
