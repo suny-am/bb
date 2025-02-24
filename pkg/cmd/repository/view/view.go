@@ -62,9 +62,10 @@ var ViewCmd = &cobra.Command{
 			if len(args) > 1 {
 				return errors.New("only one <repository> argument is allowed")
 			}
+
+			opts.repository = args[0]
 		}
 
-		opts.repository = args[0]
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		repo, err := getRepo(&opts, cmd)
 		if err != nil {
