@@ -24,7 +24,9 @@ package list
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -39,6 +41,7 @@ type ListOptions struct {
 	workspace   string
 	repository  string
 	limit       int
+	currentRepo bool
 }
 
 var opts ListOptions
@@ -51,6 +54,12 @@ var ListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if opts.limit < 0 {
 			return errors.New("limit cannot be negative or 0")
+		}
+
+		if opts.currentRepo {
+			path, _ := os.Getwd()
+			pathItems := strings.Split(path, "/")
+			opts.repository = pathItems[len(pathItems)-1]
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
@@ -126,8 +135,10 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
+	ListCmd.Flags().BoolVarP(&opts.currentRepo, "current", "c", true, "Use current directory as repository name")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-	_ = ListCmd.MarkFlagRequired("repository")
+	ListCmd.MarkFlagsMutuallyExclusive("current", "repository")
+	ListCmd.MarkFlagsOneRequired("current", "repository")
 }
