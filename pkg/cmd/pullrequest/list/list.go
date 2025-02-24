@@ -156,11 +156,11 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "cd", true, "Reference repository from current directory")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
-	ListCmd.Flags().StringVarP(&opts.creatorFilter, "creator", "c", "", "Creator match filter")
+	ListCmd.Flags().StringVar(&opts.creatorFilter, "creator", "", "Creator match filter")
 	ListCmd.Flags().StringVarP(&opts.stateFilter, "state", "s", "", "Pullrequest state filter")
 	ListCmd.Flags().IntVarP(&opts.approvals, "approvals", "a", -1, "Approvals count filter")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
