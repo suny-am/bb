@@ -12,7 +12,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/suny-am/bitbucket-cli">
+  <a href="https://github.com/suny-am/bb">
     <img src=".docs/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -21,12 +21,12 @@
   <p align="center">
     CLI For Bitbucket Cloud
     <br />
-    <!-- <a href="https://github.com/suny-am/bitbucket-cli"><strong>Explore the docs »</strong></a> -->
+    <!-- <a href="https://github.com/suny-am/bb"><strong>Explore the docs »</strong></a> -->
     <!-- <br /> -->
     <br />
-    <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/suny-am/bb/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/suny-am/bitbucket-cli/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/suny-am/bb/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -76,7 +76,7 @@ A Bitbucket Cloud compatible CLI that let's you interact with your Bitbucket res
 
 ### Status
 
-[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbitbucket-cli?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B45338%2Fgithub.com%2Fsuny-am%2Fbb?ref=badge_shield&issueType=security)
 
 <p align="right"><a href="#readme-top">🔝</a></p>
@@ -107,7 +107,7 @@ go version
 #### 1. Clone the repo
 
 ```sh
-git clone https://github.com/suny-am/bitbucket-cli.git
+git clone https://github.com/suny-am/bb.git
 ```
 
 #### 2. Build
@@ -223,7 +223,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Auth
 - [ ] TBD
 
-See the [open issues](https://github.com/suny-am/bitbucket-cli/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/suny-am/bb/issues) for a full list of proposed features (and known issues).
 
 <p align="right"><a href="#readme-top">🔝</a></p>
 
@@ -239,8 +239,8 @@ Don't forget to give the project a star! Thanks again!
 ### 1. Fork the Project
 
 ```sh
-gh repo fork suny-am/bitbucket-cli --clone
-cd bitbucket-cli
+gh repo fork suny-am/bb --clone
+cd bb
 ```
 
 ### 2. Create your Feature Branch

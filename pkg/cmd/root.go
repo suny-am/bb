@@ -35,7 +35,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "bitbucket-cli",
+	Use:   "bb",
 	Short: "CLI solution for interacting with Bitbucket Cloud tenants",
 	Long: `This CLI enables shell interaction with various
 Bitbucket Cloud resources.
