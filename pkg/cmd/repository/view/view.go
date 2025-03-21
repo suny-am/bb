@@ -108,8 +108,13 @@ func viewRepo(repo *api.Repository) {
 		colorAttribute("Links", repo.Links.Html.Href),
 	}
 
+	r, _ := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(80),
+	)
+
 	if repo.Description != "" {
-		description, err := glamour.Render(repo.Description, "light")
+		description, err := r.Render(repo.Description)
 		if err != nil {
 			panic(err)
 		}
@@ -117,7 +122,7 @@ func viewRepo(repo *api.Repository) {
 	}
 
 	if repo.Readme != "" {
-		readme, err := glamour.Render(repo.Readme, "light")
+		readme, err := r.Render(repo.Readme)
 		if err != nil {
 			panic(err)
 		}
