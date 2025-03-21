@@ -136,6 +136,6 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
+	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }
