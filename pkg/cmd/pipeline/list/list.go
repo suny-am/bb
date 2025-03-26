@@ -132,7 +132,7 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
