@@ -113,7 +113,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	}
-	for i := 0; i < len(tm.rowData); i++ {
+	for i := range len(tm.rowData) {
 		if i == tm.focusedRow {
 			tm.rowData[i].Focused = true
 		} else {
@@ -157,7 +157,7 @@ func genTable(headerData []HeaderModel, rowData []RowModel, width int, height in
 	re := lipgloss.NewRenderer(os.Stdout)
 	baseStyle := re.NewStyle().Padding(0, 1)
 	headerStyle := baseStyle.Foreground(lipgloss.Color("#1188cc")).Bold(true)
-	selectedStyle := baseStyle.Foreground(lipgloss.Color("#01BE85")).Background(lipgloss.Color("#00432F"))
+	selectedStyle := baseStyle.Foreground(lipgloss.Color("#f3f3f3")).Background(lipgloss.Color("#5f5f5f"))
 	headers := []string{}
 
 	for _, cm := range headerData {
@@ -186,7 +186,6 @@ func genTable(headerData []HeaderModel, rowData []RowModel, width int, height in
 				return baseStyle
 			}
 		}).
-		Border(lipgloss.ThickBorder()).
 		Width(width).
 		Height(height)
 
@@ -194,7 +193,6 @@ func genTable(headerData []HeaderModel, rowData []RowModel, width int, height in
 }
 
 func openLink(link string) {
-	fmt.Println(link)
 	if err := exec.Command("open", link).Start(); err != nil {
 		fmt.Println("Could not open link: ", link)
 	}
