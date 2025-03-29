@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -108,26 +109,20 @@ func generateRequest(opts *ListOptions) (*http.Request, error) {
 
 	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pipelines", opts.workspace, opts.repository)
 
-	var pageLength int
-
-	if opts.limit > 100 {
-		pageLength = 100
-	} else {
-		pageLength = opts.limit
-	}
+	pageLength := int(math.Min(float64(opts.limit), float64(100)))
 
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
+	endpoint = fmt.Sprintf("%s?sort=-created_on", endpointUrl.String())
+
 	if opts.limit > 0 {
 		query := endpointUrl.Query()
 		query.Add("pagelen", strconv.Itoa(pageLength))
 		endpointUrl.RawQuery = query.Encode()
 	}
-
-	endpoint = fmt.Sprintf("%s?sort=-created_on", endpointUrl.String())
 
 	req, err := http.NewRequest("GET", endpoint, nil)
 
