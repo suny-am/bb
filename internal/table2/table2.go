@@ -3,7 +3,9 @@ package table2
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
+	"os/exec"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -23,8 +25,14 @@ type ColumnData struct {
 	Key string
 }
 
+type RowData struct {
+	Content []string
+	Link    *string
+}
+
 type tableModel struct {
 	table          table.Model
+	rowData        []RowData
 	firstRowInView int
 	lastRowInView  int
 	debug          string
@@ -50,6 +58,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "ctrl+c":
 			return tm, tea.Quit
 		case "enter":
+			openLink(*tm.rowData[tm.table.Cursor()].Link)
 			tm.target = fmt.Sprintf("Let's go to %s!", tm.table.SelectedRow()[1])
 		case "down":
 			tm.MoveDownRelative()
@@ -131,16 +140,18 @@ func (tm tableModel) View() string {
 		style.BlockStyle.Render(tm.target)
 }
 
-func Draw(columnData []ColumnData, rowData []table.Row) {
+func Draw(columnData []ColumnData, rowData []RowData) {
 	columns := []table.Column{}
 	rows := []table.Row{}
 
-	width, _, err := term.GetSize(int(os.Stdin.Fd()))
+	width, height, err := term.GetSize(int(os.Stdin.Fd()))
 	if err != nil {
 		log.Fatalf("Error getting terminal size: %v", err)
 	}
 
 	width = width - 10
+
+	height = int(math.Min(float64(len(rowData)), float64(height))) + 1
 
 	columns = append(columns, table.Column{
 		Title: "ID",
@@ -155,8 +166,8 @@ func Draw(columnData []ColumnData, rowData []table.Row) {
 	}
 
 	for i, r := range rowData {
-		row := table.Row{strconv.Itoa(i)}
-		row = append(row, r...)
+		row := table.Row{strconv.Itoa(i + 1)}
+		row = append(row, r.Content...)
 		rows = append(rows, row)
 	}
 
@@ -164,7 +175,7 @@ func Draw(columnData []ColumnData, rowData []table.Row) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(7),
+		table.WithHeight(height),
 	)
 
 	s := table.DefaultStyles()
@@ -181,8 +192,9 @@ func Draw(columnData []ColumnData, rowData []table.Row) {
 
 	m := tableModel{
 		t,
+		rowData,
 		1,
-		6,
+		49,
 		"",
 		"",
 	}
@@ -191,5 +203,11 @@ func Draw(columnData []ColumnData, rowData []table.Row) {
 		tea.WithMouseCellMotion()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
+	}
+}
+
+func openLink(link string) {
+	if err := exec.Command("open", link).Start(); err != nil {
+		fmt.Println("Could not open link: ", link)
 	}
 }

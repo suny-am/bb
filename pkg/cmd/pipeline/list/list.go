@@ -31,7 +31,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/table"
+	"github.com/suny-am/bb/internal/table2"
 	"github.com/suny-am/bb/internal/util"
 )
 
@@ -79,7 +79,7 @@ var ListCmd = &cobra.Command{
 }
 
 func drawPipelineTable(pipelines *api.Pipelines) error {
-	headerData := []table.HeaderModel{
+	headerData := []table2.ColumnData{
 		{Key: "Repository"},
 		{Key: "Creator"},
 		{Key: "Created"},
@@ -87,9 +87,10 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		{Key: "Error"},
 		{Key: "State"},
 	}
-	rowData := []table.RowModel{}
 
-	for i, p := range pipelines.Values {
+	rowData := []table2.RowData{}
+
+	for _, p := range pipelines.Values {
 		var state string
 
 		switch p.State.Result.Name {
@@ -104,9 +105,8 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 
 		link := p.Repository.Links.Html.Href + "/pipelines/results/" + strconv.Itoa(p.Build_Number)
 
-		rowData = append(rowData, table.RowModel{
-			Id: fmt.Sprintf("%d", i),
-			Data: []string{
+		rowData = append(rowData, table2.RowData{
+			Content: []string{
 				p.Repository.Name,
 				p.Creator.Display_Name,
 				p.Created_On,
@@ -118,7 +118,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		})
 	}
 
-	table.Draw(headerData, rowData)
+	table2.Draw(headerData, rowData)
 
 	return nil
 }

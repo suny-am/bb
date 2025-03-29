@@ -30,7 +30,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/table"
+	"github.com/suny-am/bb/internal/table2"
 	"github.com/suny-am/bb/internal/util"
 )
 
@@ -88,7 +88,7 @@ var ListCmd = &cobra.Command{
 }
 
 func viewPullrequests(pullrequests *api.Pullrequests) error {
-	headerData := []table.HeaderModel{
+	headerData := []table2.ColumnData{
 		{Key: "Branch"},
 		{Key: "Repository"},
 		{Key: "Creator"},
@@ -97,15 +97,9 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 		{Key: "State"},
 		{Key: "Updated"},
 	}
-	rowData := []table.RowModel{}
+	rowData := []table2.RowData{}
 
-	for i, p := range pullrequests.Values {
-		var focused bool
-		if i == 0 {
-			focused = true
-		} else {
-			focused = false
-		}
+	for _, p := range pullrequests.Values {
 
 		approvalCount := 0
 
@@ -133,17 +127,21 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 			commentCountText = zeroCountStyle.Render(fmt.Sprintf("%d", p.Comment_Count))
 		}
 
-		rowData = append(rowData, table.RowModel{
-			Id: fmt.Sprintf("%d", i+1),
-			Data: []string{
-				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, commentCountText, approvalCountText, p.State, p.Updated_On,
+		rowData = append(rowData, table2.RowData{
+			Content: []string{
+				p.Source.Branch.Name,
+				p.Source.Repository.Name,
+				p.Author.Nickname,
+				commentCountText,
+				approvalCountText,
+				p.State,
+				p.Updated_On,
 			},
-			Focused: focused,
-			Link:    &p.Links.Html.Href,
+			Link: &p.Links.Html.Href,
 		})
 	}
 
-	table.Draw(headerData, rowData)
+	table2.Draw(headerData, rowData)
 	return nil
 }
 
@@ -156,7 +154,7 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")

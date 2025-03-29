@@ -30,7 +30,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/table"
+	"github.com/suny-am/bb/internal/table2"
 )
 
 type ListOptions struct {
@@ -72,15 +72,15 @@ var ListCmd = &cobra.Command{
 }
 
 func drawRepoTable(repos *api.Repositories) error {
-	headerData := []table.HeaderModel{
+	headerData := []table2.ColumnData{
 		{Key: "Name"},
 		{Key: "Description"},
 		{Key: "Access"},
 		{Key: "Updated"},
 	}
-	rowData := []table.RowModel{}
+	rowData := []table2.RowData{}
 
-	for i, r := range repos.Values {
+	for _, r := range repos.Values {
 		var access string
 		if r.Is_Private {
 			access = "Private"
@@ -88,26 +88,17 @@ func drawRepoTable(repos *api.Repositories) error {
 			access = "Public"
 		}
 
-		var focused bool
-		if i == 0 {
-			focused = true
-		} else {
-			focused = false
-		}
-
 		desc := strings.ReplaceAll(r.Description, "\r\n", " ")
 
-		rowData = append(rowData, table.RowModel{
-			Id: fmt.Sprintf("%d", i+1),
-			Data: []string{
+		rowData = append(rowData, table2.RowData{
+			Content: []string{
 				r.Name, desc, access, r.Updated_On,
 			},
-			Focused: focused,
-			Link:    &r.Links.Html.Href,
+			Link: &r.Links.Html.Href,
 		})
 	}
 
-	table.Draw(headerData, rowData)
+	table2.Draw(headerData, rowData)
 
 	return nil
 }
