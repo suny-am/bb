@@ -32,6 +32,7 @@ import (
 	"github.com/suny-am/bb/pkg/cmd/pipeline"
 	"github.com/suny-am/bb/pkg/cmd/pullrequest"
 	"github.com/suny-am/bb/pkg/cmd/repository"
+	"github.com/suny-am/bb/pkg/cmd/table"
 )
 
 var rootCmd = &cobra.Command{
@@ -71,6 +72,7 @@ func init() {
 	rootCmd.AddCommand(pipeline.PipelineCmd)
 	rootCmd.AddCommand(pullrequest.PullrequestCmd)
 	rootCmd.AddCommand(repository.RepositoryCmd)
+	rootCmd.AddCommand(table.TableCmd)
 
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug mode")
 }
