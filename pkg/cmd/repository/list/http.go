@@ -67,21 +67,18 @@ func get(repositories *api.Repositories, cmd *cobra.Command, opts *ListOptions) 
 func fetchReposRecurse(repositories *api.Repositories, client *http2.Client, req *http.Request) {
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Request Error: %s", err)
-		return
+		panic(err)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Body Parsing Error: %s", err)
-		return
+		panic(err)
 	}
 
 	var partialRepositories api.Repositories
 
 	if err := json.Unmarshal([]byte(body), &partialRepositories); err != nil {
-		fmt.Printf("Unmarshalling error Error: %s", err)
-		return
+		panic(err)
 	}
 
 	if partialRepositories.Values != nil {

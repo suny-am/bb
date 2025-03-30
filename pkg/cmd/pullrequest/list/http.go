@@ -133,21 +133,18 @@ func generateRequest(opts *PrListOptions) (*http.Request, error) {
 func fetchPullrequestsRecurse(pullrequests *api.Pullrequests, client *http2.Client, req *http.Request) {
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 
 	var particalPullrequests api.Pullrequests
 
 	if err := json.Unmarshal([]byte(body), &particalPullrequests); err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 
 	for i := range particalPullrequests.Values {

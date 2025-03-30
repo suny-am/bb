@@ -84,7 +84,6 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		{Key: "Creator"},
 		{Key: "Created"},
 		{Key: "Completed"},
-		{Key: "Error"},
 		{Key: "State"},
 	}
 
@@ -96,11 +95,15 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		switch p.State.Result.Name {
 
 		case "FAILED":
-			state = style.CenterAlignStyle.Render("❌")
+			state = "❌"
 		case "SUCCESSFUL":
-			state = style.CenterAlignStyle.Render("✅")
+			state = "✅"
 		default:
-			state = style.CenterAlignStyle.Render("👽")
+			if p.State.Name == "IN_PROGRESS" {
+				state = "😴"
+			} else {
+				state = "👽"
+			}
 		}
 
 		link := p.Repository.Links.Html.Href + "/pipelines/results/" + strconv.Itoa(p.Build_Number)
@@ -111,8 +114,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 				p.Creator.Display_Name,
 				p.Created_On,
 				p.Completed_On,
-				p.State.Result.Error.Message,
-				state,
+				style.CenterAlignStyle.Render(state),
 			},
 			Link: &link,
 		})

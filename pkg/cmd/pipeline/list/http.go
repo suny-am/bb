@@ -50,7 +50,7 @@ func getPipelines(opts *ListOptions, cmd *cobra.Command) (*api.Pipelines, error)
 		spinner.Stop()
 	}()
 
-	spinner.Start("Searching pipelines")
+	spinner.Start("Getting pipelines")
 
 	return &pipelines, err
 }
@@ -69,21 +69,18 @@ func get(pipelines *api.Pipelines, cmd *cobra.Command, opts *ListOptions) error 
 func fetchPipelinesRecurse(client *http2.Client, req *http.Request, pipelines *api.Pipelines) {
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Request Error: %s", err)
-		return
+		panic(err)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Body Parsing Error: %s", err)
-		return
+		panic(err)
 	}
 
 	var partialpipelines api.Pipelines
 
 	if err := json.Unmarshal([]byte(body), &partialpipelines); err != nil {
-		fmt.Printf("Unmarshalling error Error: %s", err)
-		return
+		panic(err)
 	}
 
 	if partialpipelines.Values != nil {
@@ -93,8 +90,7 @@ func fetchPipelinesRecurse(client *http2.Client, req *http.Request, pipelines *a
 			newReq.Header.Add("Authorization", req.Header["Authorization"][0])
 			newReq.Header.Add("Accept", req.Header["Accept"][0])
 			if err != nil {
-				fmt.Printf("Request Error: %s", err)
-				return
+				panic(err)
 			}
 			if len(pipelines.Values) >= opts.limit {
 				return
