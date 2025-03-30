@@ -26,11 +26,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/internal/style"
 	"github.com/suny-am/bb/internal/table"
 	"github.com/suny-am/bb/internal/util"
 )
@@ -79,7 +79,7 @@ var ListCmd = &cobra.Command{
 }
 
 func drawPipelineTable(pipelines *api.Pipelines) error {
-	headerData := []table.HeaderModel{
+	headerData := []table.ColumnData{
 		{Key: "Repository"},
 		{Key: "Creator"},
 		{Key: "Created"},
@@ -87,26 +87,26 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		{Key: "Error"},
 		{Key: "State"},
 	}
-	rowData := []table.RowModel{}
 
-	for i, p := range pipelines.Values {
+	rowData := []table.RowData{}
+
+	for _, p := range pipelines.Values {
 		var state string
 
 		switch p.State.Result.Name {
 
 		case "FAILED":
-			state = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000")).Render(p.State.Result.Name)
+			state = style.CenterAlignStyle.Render("❌")
 		case "SUCCESSFUL":
-			state = lipgloss.NewStyle().Foreground(lipgloss.Color("#119911")).Render(p.State.Result.Name)
+			state = style.CenterAlignStyle.Render("✅")
 		default:
-			state = p.State.Result.Name
+			state = style.CenterAlignStyle.Render("👽")
 		}
 
 		link := p.Repository.Links.Html.Href + "/pipelines/results/" + strconv.Itoa(p.Build_Number)
 
-		rowData = append(rowData, table.RowModel{
-			Id: fmt.Sprintf("%d", i),
-			Data: []string{
+		rowData = append(rowData, table.RowData{
+			Content: []string{
 				p.Repository.Name,
 				p.Creator.Display_Name,
 				p.Created_On,

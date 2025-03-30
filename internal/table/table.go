@@ -4,196 +4,77 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
+	"strconv"
 
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
 	"golang.org/x/term"
 )
 
-type tableModel struct {
-	table      *table.Table
-	headerData []HeaderModel
-	rowData    []RowModel
+func Draw(columnData []ColumnData, rowData []RowData) {
+	columns := []table.Column{}
+	rows := []table.Row{}
 
-	coordinates  coordinates
-	focusedRow   int
-	windowWidth  int
-	windowHeight int
-
-	leftOffset int
-	topOffset  int
-}
-
-type coordinates struct {
-	x int
-	y int
-}
-
-const (
-	topOffset = 3 // offset required to register correct Y coordinate for row event ( 1 border + 1 heading + 1 border )
-)
-
-func (tm tableModel) Init() tea.Cmd {
-	return nil
-}
-
-func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-
-	case tea.WindowSizeMsg:
-		tm.windowWidth = msg.Width
-		tm.windowHeight = msg.Height
-
-	case tea.KeyMsg:
-
-		switch msg.String() {
-		case "ctrl+c", "q", "esc":
-			return tm, tea.Quit
-		case "down":
-			if tm.focusedRow < len(tm.rowData)-1 {
-				tm.focusedRow++
-			}
-		case "up":
-			if tm.focusedRow > 0 {
-				tm.focusedRow--
-			}
-		case "right":
-			if tm.leftOffset < 300 {
-				tm.leftOffset++
-			}
-		case "left":
-			if tm.leftOffset > 0 {
-				tm.leftOffset--
-			}
-		case "enter":
-			if tm.rowData[tm.focusedRow].Link != nil {
-				openLink(*tm.rowData[tm.focusedRow].Link)
-			}
-		}
-
-	case tea.MouseMsg:
-
-		if tea.MouseEvent(msg).IsWheel() {
-			switch tea.MouseButton(msg.Button) {
-			case tea.MouseButtonWheelUp:
-				if tm.focusedRow > 0 {
-					tm.focusedRow--
-				}
-			case tea.MouseButtonWheelDown:
-				if tm.focusedRow < len(tm.rowData)-1 {
-					tm.focusedRow++
-				}
-			}
-		}
-
-		switch msg.Action {
-		case tea.MouseAction(tea.MouseButtonLeft):
-			tm.coordinates = coordinates{msg.X, msg.Y}
-			rY := msg.Y - topOffset
-			if rY >= 0 && rY < len(tm.rowData) {
-				tm.focusedRow = rY
-				if tm.rowData[tm.focusedRow].Link != nil && msg.Shift {
-					openLink(*tm.rowData[tm.focusedRow].Link)
-				}
-			}
-
-		case tea.MouseAction(tea.MouseButtonWheelRight):
-			tm.coordinates = coordinates{msg.X, msg.Y}
-			if tm.focusedRow < len(tm.rowData)-1 {
-				tm.focusedRow++
-			}
-
-		case tea.MouseAction(tea.MouseButtonWheelLeft):
-			tm.coordinates = coordinates{msg.X, msg.Y}
-			if tm.focusedRow > 0 {
-				tm.focusedRow--
-			}
-		}
-
-	}
-	for i := range len(tm.rowData) {
-		if i == tm.focusedRow {
-			tm.rowData[i].Focused = true
-		} else {
-			tm.rowData[i].Focused = false
-		}
+	width, height, err := term.GetSize(int(os.Stdin.Fd()))
+	if err != nil {
+		log.Fatalf("Error getting terminal size: %v", err)
 	}
 
-	tm.table = genTable(tm.headerData, tm.rowData, tm.windowWidth, tm.windowHeight)
-	return tm, nil
-}
+	width = width - 10
 
-func (tm tableModel) View() string {
-	return tm.table.String()
-}
+	columns = append(columns, table.Column{
+		Title: "ID",
+		Width: 4,
+	})
 
-func Draw(headerData []HeaderModel, rowData []RowModel) {
-	width, height, _ := term.GetSize(int(os.Stdin.Fd()))
-
-	tm := tableModel{
-		genTable(headerData, rowData, width, height),
-		headerData,
-		rowData,
-		coordinates{0, 0},
-		0,
-		width,
-		height,
-		0,
-		0,
+	for _, cd := range columnData {
+		columns = append(columns, table.Column{
+			Title: cd.Key,
+			Width: (width - 4) / len(columnData),
+		})
 	}
 
-	p := tea.NewProgram(tm,
-		tea.WithMouseAllMotion(),
-		tea.WithAltScreen(),
+	for i, r := range rowData {
+		row := table.Row{strconv.Itoa(i + 1)}
+		row = append(row, r.Content...)
+		rows = append(rows, row)
+	}
+
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithFocused(true),
+		table.WithWidth(width),
+		table.WithHeight(height),
 	)
-	if _, err := p.Run(); err != nil {
-		log.Fatal(err)
-	}
-}
 
-func genTable(headerData []HeaderModel, rowData []RowModel, width int, height int) *table.Table {
-	re := lipgloss.NewRenderer(os.Stdout)
-	baseStyle := re.NewStyle().Padding(0, 1)
-	headerStyle := baseStyle.Foreground(lipgloss.Color("#1188cc")).Bold(true)
-	selectedStyle := baseStyle.Foreground(lipgloss.Color("#f3f3f3")).Background(lipgloss.Color("#5f5f5f"))
-	headers := []string{}
+	s := table.DefaultStyles()
+	s.Header = s.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		Bold(false)
+	s.Selected = s.Selected.
+		Foreground(lipgloss.Color("229")).
+		Background(lipgloss.Color("57")).
+		Bold(false)
+	t.SetStyles(s)
 
-	for _, cm := range headerData {
-		headers = append(headers, cm.Key)
-	}
-
-	tableRows := [][]string{}
-
-	for i, rm := range rowData {
-		if i <= height-topOffset {
-			tableRows = append(tableRows, rm.Data)
-		}
+	tm := TableModel{
+		t,
+		rowData,
+		1,
+		49,
+		"",
+		"",
 	}
 
-	t := table.New().
-		Headers(headers...).
-		Rows(tableRows...).
-		Border(lipgloss.NormalBorder()).
-		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
-		StyleFunc(func(row, col int) lipgloss.Style {
-			if row == 0 {
-				return headerStyle
-			} else if rowData[row-1].Focused {
-				return selectedStyle
-			} else {
-				return baseStyle
-			}
-		}).
-		Width(width).
-		Height(height)
-
-	return t
-}
-
-func openLink(link string) {
-	if err := exec.Command("open", link).Start(); err != nil {
-		fmt.Println("Could not open link: ", link)
+	if _, err := tea.NewProgram(
+		tm,
+		tea.WithAltScreen(),
+		tea.WithMouseCellMotion()).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
 	}
 }

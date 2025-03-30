@@ -88,7 +88,7 @@ var ListCmd = &cobra.Command{
 }
 
 func viewPullrequests(pullrequests *api.Pullrequests) error {
-	headerData := []table.HeaderModel{
+	headerData := []table.ColumnData{
 		{Key: "Branch"},
 		{Key: "Repository"},
 		{Key: "Creator"},
@@ -97,15 +97,9 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 		{Key: "State"},
 		{Key: "Updated"},
 	}
-	rowData := []table.RowModel{}
+	rowData := []table.RowData{}
 
-	for i, p := range pullrequests.Values {
-		var focused bool
-		if i == 0 {
-			focused = true
-		} else {
-			focused = false
-		}
+	for _, p := range pullrequests.Values {
 
 		approvalCount := 0
 
@@ -133,13 +127,17 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 			commentCountText = zeroCountStyle.Render(fmt.Sprintf("%d", p.Comment_Count))
 		}
 
-		rowData = append(rowData, table.RowModel{
-			Id: fmt.Sprintf("%d", i+1),
-			Data: []string{
-				p.Source.Branch.Name, p.Source.Repository.Name, p.Author.Nickname, commentCountText, approvalCountText, p.State, p.Updated_On,
+		rowData = append(rowData, table.RowData{
+			Content: []string{
+				p.Source.Branch.Name,
+				p.Source.Repository.Name,
+				p.Author.Nickname,
+				commentCountText,
+				approvalCountText,
+				p.State,
+				p.Updated_On,
 			},
-			Focused: focused,
-			Link:    &p.Links.Html.Href,
+			Link: &p.Links.Html.Href,
 		})
 	}
 
@@ -156,7 +154,7 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
+	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
