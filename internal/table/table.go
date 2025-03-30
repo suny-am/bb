@@ -25,7 +25,7 @@ func Draw(columnData []ColumnData, rowData []RowData) {
 
 	columns = append(columns, table.Column{
 		Title: "ID",
-		Width: 4,
+		Width: 5,
 	})
 
 	for _, cd := range columnData {

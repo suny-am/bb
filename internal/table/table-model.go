@@ -154,19 +154,19 @@ func (tm *TableModel) updateTableDimensions() {
 		if i == 0 {
 			updatedColumns = append(updatedColumns, table.Column{
 				Title: c.Title,
-				Width: 4,
+				Width: 5,
 			})
 		} else {
 			updatedColumns = append(updatedColumns, table.Column{
 				Title: c.Title,
-				Width: (width - 4) / len(tm.table.Columns()),
+				Width: (width-4)/(len(tm.table.Columns())-1) - 3,
 			})
 		}
 	}
 
 	tm.table.SetColumns(updatedColumns)
-	tm.table.SetHeight(height - 4)
-	tm.table.SetWidth(width - 20)
+	tm.table.SetHeight(height - 3)
+	tm.table.SetWidth(width - 4)
 }
 
 func openLink(link string) {
