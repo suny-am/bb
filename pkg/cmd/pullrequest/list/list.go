@@ -30,7 +30,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/table2"
+	"github.com/suny-am/bb/internal/table"
 	"github.com/suny-am/bb/internal/util"
 )
 
@@ -88,7 +88,7 @@ var ListCmd = &cobra.Command{
 }
 
 func viewPullrequests(pullrequests *api.Pullrequests) error {
-	headerData := []table2.ColumnData{
+	headerData := []table.ColumnData{
 		{Key: "Branch"},
 		{Key: "Repository"},
 		{Key: "Creator"},
@@ -97,7 +97,7 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 		{Key: "State"},
 		{Key: "Updated"},
 	}
-	rowData := []table2.RowData{}
+	rowData := []table.RowData{}
 
 	for _, p := range pullrequests.Values {
 
@@ -127,7 +127,7 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 			commentCountText = zeroCountStyle.Render(fmt.Sprintf("%d", p.Comment_Count))
 		}
 
-		rowData = append(rowData, table2.RowData{
+		rowData = append(rowData, table.RowData{
 			Content: []string{
 				p.Source.Branch.Name,
 				p.Source.Repository.Name,
@@ -141,7 +141,7 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 		})
 	}
 
-	table2.Draw(headerData, rowData)
+	table.Draw(headerData, rowData)
 	return nil
 }
 

@@ -1,9 +1,8 @@
-package table2
+package table
 
 import (
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/exec"
 	"strconv"
@@ -15,12 +14,6 @@ import (
 	"golang.org/x/term"
 )
 
-var baseStyle = lipgloss.NewStyle().
-	BorderStyle(lipgloss.NormalBorder()).
-	BorderForeground(lipgloss.Color("240"))
-
-var debugMode bool
-
 type ColumnData struct {
 	Key string
 }
@@ -30,7 +23,7 @@ type RowData struct {
 	Link    *string
 }
 
-type tableModel struct {
+type TableModel struct {
 	table          table.Model
 	rowData        []RowData
 	firstRowInView int
@@ -39,11 +32,21 @@ type tableModel struct {
 	target         string
 }
 
-func (tm tableModel) Init() tea.Cmd { return nil }
+var baseStyle = lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	BorderForeground(lipgloss.Color("240"))
 
-func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+var debugMode bool
+
+func (tm TableModel) Init() tea.Cmd { return nil }
+
+func (tm TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
+
+	case tea.WindowSizeMsg:
+		tm.updateTableDimensions()
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "d":
@@ -59,7 +62,6 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return tm, tea.Quit
 		case "enter":
 			openLink(*tm.rowData[tm.table.Cursor()].Link)
-			tm.target = fmt.Sprintf("Let's go to %s!", tm.table.SelectedRow()[1])
 		case "down":
 			tm.MoveDownRelative()
 			return tm, nil
@@ -67,6 +69,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			tm.MoveUpRelative()
 			return tm, nil
 		}
+
 	case tea.MouseMsg:
 		if tea.MouseEvent(msg).IsWheel() {
 			switch tea.MouseButton(msg.Button) {
@@ -86,7 +89,7 @@ func (tm tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return tm, cmd
 }
 
-func (tm *tableModel) CalculateClickPos(msg tea.MouseMsg) {
+func (tm *TableModel) CalculateClickPos(msg tea.MouseMsg) {
 	if msg.Y >= 0 && msg.Y-3 < tm.table.Height() { // check if click is within tables visible rows area
 		clicked := msg.Y - 3
 		pos := tm.firstRowInView - 1 + clicked
@@ -106,7 +109,7 @@ func (tm *tableModel) CalculateClickPos(msg tea.MouseMsg) {
 	}
 }
 
-func (tm *tableModel) MoveUpRelative() {
+func (tm *TableModel) MoveUpRelative() {
 	tm.table.MoveUp(1)
 	if tm.table.Cursor() <= tm.lastRowInView &&
 		tm.table.Cursor() < tm.firstRowInView-1 {
@@ -115,7 +118,7 @@ func (tm *tableModel) MoveUpRelative() {
 	}
 }
 
-func (tm *tableModel) MoveDownRelative() {
+func (tm *TableModel) MoveDownRelative() {
 	tm.table.MoveDown(1)
 	if tm.table.Cursor() >= tm.lastRowInView {
 		tm.firstRowInView++
@@ -123,87 +126,47 @@ func (tm *tableModel) MoveDownRelative() {
 	}
 }
 
-func (tm tableModel) View() string {
+func (tm TableModel) View() string {
 	if debugMode {
-		tm.debug = style.BlockStyle.Render(fmt.Sprintf("%v\nHeight: %s\nRow: %s\nFirst row: %s\nLast row: %s",
-			style.DebugHeaderStyle.Render("DEBUG"),
+		tm.debug = style.BlockStyle.Render(fmt.Sprintf("%v Height: %s Row: %s First row: %s Last row: %s",
+			style.DebugHeaderStyle.Render("[DEBUG]"),
 			style.PropValueStyle.Render(strconv.Itoa(tm.table.Height())),
 			style.PropValueStyle.Render(strconv.Itoa(tm.table.Cursor()+1)),
 			style.PropValueStyle.Render(strconv.Itoa(tm.firstRowInView)),
 			style.PropValueStyle.Render(strconv.Itoa(tm.lastRowInView)),
 		))
 	}
-	return baseStyle.Render(tm.table.View()) +
+	return baseStyle.
+		Render(tm.table.View()) +
 		"\n" +
-		tm.debug +
-		"\n" +
-		style.BlockStyle.Render(tm.target)
+		tm.debug
 }
 
-func Draw(columnData []ColumnData, rowData []RowData) {
-	columns := []table.Column{}
-	rows := []table.Row{}
-
+func (tm *TableModel) updateTableDimensions() {
 	width, height, err := term.GetSize(int(os.Stdin.Fd()))
 	if err != nil {
 		log.Fatalf("Error getting terminal size: %v", err)
 	}
 
-	width = width - 10
+	updatedColumns := []table.Column{}
 
-	height = int(math.Min(float64(len(rowData)), float64(height))) + 1
-
-	columns = append(columns, table.Column{
-		Title: "ID",
-		Width: 4,
-	})
-
-	for _, cd := range columnData {
-		columns = append(columns, table.Column{
-			Title: cd.Key,
-			Width: (width - 4) / len(columnData),
-		})
+	for i, c := range tm.table.Columns() {
+		if i == 0 {
+			updatedColumns = append(updatedColumns, table.Column{
+				Title: c.Title,
+				Width: 4,
+			})
+		} else {
+			updatedColumns = append(updatedColumns, table.Column{
+				Title: c.Title,
+				Width: (width - 4) / len(tm.table.Columns()),
+			})
+		}
 	}
 
-	for i, r := range rowData {
-		row := table.Row{strconv.Itoa(i + 1)}
-		row = append(row, r.Content...)
-		rows = append(rows, row)
-	}
-
-	t := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithFocused(true),
-		table.WithHeight(height),
-	)
-
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).
-		BorderBottom(true).
-		Bold(false)
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("57")).
-		Bold(false)
-	t.SetStyles(s)
-
-	m := tableModel{
-		t,
-		rowData,
-		1,
-		49,
-		"",
-		"",
-	}
-	if _, err := tea.NewProgram(m,
-		tea.WithAltScreen(),
-		tea.WithMouseCellMotion()).Run(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
-	}
+	tm.table.SetColumns(updatedColumns)
+	tm.table.SetHeight(height - 4)
+	tm.table.SetWidth(width - 20)
 }
 
 func openLink(link string) {

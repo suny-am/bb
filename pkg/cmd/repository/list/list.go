@@ -30,7 +30,7 @@ import (
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/table2"
+	"github.com/suny-am/bb/internal/table"
 )
 
 type ListOptions struct {
@@ -72,13 +72,13 @@ var ListCmd = &cobra.Command{
 }
 
 func drawRepoTable(repos *api.Repositories) error {
-	headerData := []table2.ColumnData{
+	headerData := []table.ColumnData{
 		{Key: "Name"},
 		{Key: "Description"},
 		{Key: "Access"},
 		{Key: "Updated"},
 	}
-	rowData := []table2.RowData{}
+	rowData := []table.RowData{}
 
 	for _, r := range repos.Values {
 		var access string
@@ -90,7 +90,7 @@ func drawRepoTable(repos *api.Repositories) error {
 
 		desc := strings.ReplaceAll(r.Description, "\r\n", " ")
 
-		rowData = append(rowData, table2.RowData{
+		rowData = append(rowData, table.RowData{
 			Content: []string{
 				r.Name, desc, access, r.Updated_On,
 			},
@@ -98,7 +98,7 @@ func drawRepoTable(repos *api.Repositories) error {
 		})
 	}
 
-	table2.Draw(headerData, rowData)
+	table.Draw(headerData, rowData)
 
 	return nil
 }
