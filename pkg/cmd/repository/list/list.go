@@ -38,6 +38,7 @@ type ListOptions struct {
 	workspace   string
 	nameFilter  string
 	limit       int
+	sort        string
 }
 
 var opts ListOptions
@@ -114,4 +115,5 @@ func init() {
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
 	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
+	ListCmd.Flags().StringVarP(&opts.sort, "sort", "s", "", "Sorting mode")
 }

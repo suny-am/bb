@@ -109,16 +109,21 @@ func generateRequest(opts *ListOptions) (*http.Request, error) {
 	if opts.nameFilter != "" {
 		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.nameFilter)
 	}
-
-	pageLength := int(math.Min(float64(opts.limit), float64(30)))
-
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
+	query := endpointUrl.Query()
+
+	if opts.sort != "" {
+		query.Add("sort", fmt.Sprintf("-%s", opts.sort))
+		endpointUrl.RawQuery = query.Encode()
+	}
+
+	pageLength := int(math.Min(float64(opts.limit), float64(30)))
+
 	if opts.limit > 0 {
-		query := endpointUrl.Query()
 		query.Add("pagelen", strconv.Itoa(pageLength))
 		endpointUrl.RawQuery = query.Encode()
 	}
