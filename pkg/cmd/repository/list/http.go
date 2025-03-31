@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -109,13 +110,7 @@ func generateRequest(opts *ListOptions) (*http.Request, error) {
 		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.nameFilter)
 	}
 
-	var pageLength int
-
-	if opts.limit > 100 {
-		pageLength = 100
-	} else {
-		pageLength = opts.limit
-	}
+	pageLength := int(math.Min(float64(opts.limit), float64(30)))
 
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {

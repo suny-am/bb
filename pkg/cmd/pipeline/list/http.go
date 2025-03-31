@@ -107,12 +107,12 @@ func generateRequest(opts *ListOptions) (*http.Request, error) {
 
 	pageLength := int(math.Min(float64(opts.limit), float64(100)))
 
+	endpoint = fmt.Sprintf("%s?sort=-created_on", endpoint)
+
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
-
-	endpoint = fmt.Sprintf("%s?sort=-created_on", endpointUrl.String())
 
 	if opts.limit > 0 {
 		query := endpointUrl.Query()
@@ -120,7 +120,7 @@ func generateRequest(opts *ListOptions) (*http.Request, error) {
 		endpointUrl.RawQuery = query.Encode()
 	}
 
-	req, err := http.NewRequest("GET", endpoint, nil)
+	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)

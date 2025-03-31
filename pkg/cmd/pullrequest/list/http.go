@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -37,6 +38,8 @@ import (
 	"github.com/suny-am/bb/internal/spinner"
 	"github.com/suny-am/bb/internal/textinput"
 )
+
+const pageLenMax = 50
 
 func getPullrequests(opts *PrListOptions, cmd *cobra.Command) (*api.Pullrequests, error) {
 	var pullrequests api.Pullrequests
@@ -104,13 +107,7 @@ func generateRequest(opts *PrListOptions) (*http.Request, error) {
 		endpoint = fmt.Sprintf("%s?q=state=\"%s\"", endpoint, opts.stateFilter)
 	}
 
-	var pageLength int
-
-	if opts.limit > 100 {
-		pageLength = 100
-	} else {
-		pageLength = opts.limit
-	}
+	pageLength := int(math.Min(float64(opts.limit), float64(pageLenMax)))
 
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {
@@ -122,6 +119,7 @@ func generateRequest(opts *PrListOptions) (*http.Request, error) {
 		query.Add("pagelen", strconv.Itoa(pageLength))
 		endpointUrl.RawQuery = query.Encode()
 	}
+
 	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
 
 	req.Header.Add("Accept", "application/json")
