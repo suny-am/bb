@@ -90,26 +90,6 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 	rowData := []table.RowData{}
 
 	for _, p := range pipelines.Values {
-		var state string
-
-		switch p.State.Result.Name {
-
-		// TODO: refactor
-		case "FAILED":
-			state = "❌"
-		case "SUCCESSFUL":
-			state = "✅"
-		default:
-			if p.State.Name == "IN_PROGRESS" {
-				if p.State.Stage.Name == "RUNNING" {
-					state = "⚡️"
-				} else {
-					state = "😴"
-				}
-			} else {
-				state = "👽"
-			}
-		}
 
 		link := p.Repository.Links.Html.Href + "/pipelines/results/" + strconv.Itoa(p.Build_Number)
 
@@ -119,7 +99,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 				p.Creator.Display_Name,
 				p.Created_On,
 				p.Completed_On,
-				style.CenterAlignStyle.Render(state),
+				style.CenterAlignStyle.Render(setState(p.State)),
 			},
 			Link: &link,
 		})
@@ -128,6 +108,28 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 	table.Draw(headerData, rowData)
 
 	return nil
+}
+
+func setState(s api.PipelineState) string {
+	var state string
+
+	// TODO: read icons from config
+	switch true {
+	case s.Name == "PENDING":
+		state = "🕗"
+	case s.Result.Name == "FAILED":
+		state = "❌"
+	case s.Result.Name == "SUCCESSFUL":
+		state = "✅"
+	case s.Stage.Name == "PAUSED":
+		state = "😴"
+	case s.Stage.Name == "RUNNING":
+		state = "⚡️"
+	default:
+		state = "👽"
+	}
+
+	return state
 }
 
 func init() {
