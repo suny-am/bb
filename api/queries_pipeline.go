@@ -26,7 +26,13 @@ type Pipeline struct {
 type PipelineState struct {
 	Name   string
 	Type   string
+	Stage  PipelineStage
 	Result PipelineResult
+}
+
+type PipelineStage struct {
+	Name string
+	Type string
 }
 
 type PipelineResult struct {

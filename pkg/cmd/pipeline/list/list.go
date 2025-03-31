@@ -94,13 +94,18 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 
 		switch p.State.Result.Name {
 
+		// TODO: refactor
 		case "FAILED":
 			state = "❌"
 		case "SUCCESSFUL":
 			state = "✅"
 		default:
 			if p.State.Name == "IN_PROGRESS" {
-				state = "😴"
+				if p.State.Stage.Name == "RUNNING" {
+					state = "⚡️"
+				} else {
+					state = "😴"
+				}
 			} else {
 				state = "👽"
 			}
