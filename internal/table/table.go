@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,20 +22,15 @@ func Draw(columnData []ColumnData, rowData []RowData) {
 
 	width = width - 10
 
-	columns = append(columns, table.Column{
-		Title: "ID",
-		Width: 5,
-	})
-
 	for _, cd := range columnData {
 		columns = append(columns, table.Column{
 			Title: cd.Key,
-			Width: (width - 4) / len(columnData),
+			Width: width / len(columnData),
 		})
 	}
 
-	for i, r := range rowData {
-		row := table.Row{strconv.Itoa(i + 1)}
+	for _, r := range rowData {
+		row := table.Row{}
 		row = append(row, r.Content...)
 		rows = append(rows, row)
 	}

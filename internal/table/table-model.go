@@ -150,18 +150,11 @@ func (tm *TableModel) updateTableDimensions() {
 
 	updatedColumns := []table.Column{}
 
-	for i, c := range tm.table.Columns() {
-		if i == 0 {
-			updatedColumns = append(updatedColumns, table.Column{
-				Title: c.Title,
-				Width: 5,
-			})
-		} else {
-			updatedColumns = append(updatedColumns, table.Column{
-				Title: c.Title,
-				Width: (width-4)/(len(tm.table.Columns())-1) - 3,
-			})
-		}
+	for _, c := range tm.table.Columns() {
+		updatedColumns = append(updatedColumns, table.Column{
+			Title: c.Title,
+			Width: width/len(tm.table.Columns()) - 2,
+		})
 	}
 
 	tm.table.SetColumns(updatedColumns)
