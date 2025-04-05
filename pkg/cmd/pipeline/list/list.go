@@ -99,7 +99,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 				p.Creator.Display_Name,
 				p.Created_On,
 				p.Completed_On,
-				style.CenterAlignStyle.Render(setState(p.State)),
+				setState(p.State),
 			},
 			Link: &link,
 		})
@@ -121,6 +121,8 @@ func setState(s api.PipelineState) string {
 		state = "❌"
 	case s.Result.Name == "SUCCESSFUL":
 		state = "✅"
+	case s.Result.Name == "STOPPED":
+		state = "⛔️"
 	case s.Stage.Name == "PAUSED":
 		state = "😴"
 	case s.Stage.Name == "RUNNING":
@@ -129,7 +131,7 @@ func setState(s api.PipelineState) string {
 		state = "👽"
 	}
 
-	return state
+	return style.CenterAlignStyle.Render(state)
 }
 
 func init() {

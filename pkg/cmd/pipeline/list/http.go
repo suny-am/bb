@@ -63,6 +63,7 @@ func get(pipelines *api.Pipelines, cmd *cobra.Command, opts *ListOptions) error 
 	}
 
 	fetchPipelinesRecurse(client, req, pipelines)
+
 	return nil
 }
 
