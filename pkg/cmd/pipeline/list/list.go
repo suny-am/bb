@@ -81,6 +81,7 @@ var ListCmd = &cobra.Command{
 func drawPipelineTable(pipelines *api.Pipelines) error {
 	headerData := []table.ColumnData{
 		{Key: "Repository"},
+		{Key: "Branch"},
 		{Key: "Creator"},
 		{Key: "Created"},
 		{Key: "Completed"},
@@ -96,6 +97,7 @@ func drawPipelineTable(pipelines *api.Pipelines) error {
 		rowData = append(rowData, table.RowData{
 			Content: []string{
 				p.Repository.Name,
+				p.Target.Ref_Name,
 				p.Creator.Display_Name,
 				p.Created_On,
 				p.Completed_On,

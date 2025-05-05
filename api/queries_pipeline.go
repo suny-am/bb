@@ -9,7 +9,7 @@ type Pipelines struct {
 }
 
 type Pipeline struct {
-	Target                Branch
+	Target                Target
 	Links                 Links
 	State                 PipelineState
 	Creator               User
@@ -50,4 +50,9 @@ type PipelineError struct {
 type Configuration_Source struct {
 	Source Branch
 	URI    string
+}
+
+type Target struct {
+	Ref_Type string
+	Ref_Name string
 }
