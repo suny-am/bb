@@ -36,7 +36,6 @@ import (
 )
 
 type ViewOptions struct {
-	current     bool
 	repository  string
 	workspace   string
 	pullrequest string
@@ -51,7 +50,7 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a pullrequest in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.current {
+		if opts.repository == "" {
 			opts.repository = util.GetCurrentDir()
 		}
 
@@ -137,7 +136,6 @@ func viewPullrequest(pr *api.Pullrequest) {
 		for _, c := range commentData {
 			sb.WriteString(c.content)
 		}
-
 	}
 
 	fmt.Println(mdStyle.Render(sb.String()))
@@ -153,9 +151,6 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ViewCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
-	ViewCmd.MarkFlagsOneRequired("repository", "current")
-	ViewCmd.MarkFlagsMutuallyExclusive("repository", "current")
 }

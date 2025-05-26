@@ -37,7 +37,6 @@ import (
 )
 
 type ViewOptions struct {
-	current     bool
 	repository  string
 	workspace   string
 	credentials string
@@ -51,7 +50,7 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a repository in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.current {
+		if opts.repository == "" {
 			opts.repository = util.GetCurrentDir()
 		} else {
 
@@ -141,6 +140,5 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }

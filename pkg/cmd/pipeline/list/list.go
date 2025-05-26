@@ -40,7 +40,6 @@ type ListOptions struct {
 	workspace   string
 	repository  string
 	limit       int
-	current     bool
 }
 
 var opts ListOptions
@@ -55,7 +54,7 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		if opts.current {
+		if opts.repository == "" {
 			opts.repository = util.GetCurrentDir()
 		}
 
@@ -145,10 +144,7 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
 	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-	ListCmd.MarkFlagsMutuallyExclusive("current", "repository")
-	ListCmd.MarkFlagsOneRequired("current", "repository")
 }

@@ -32,7 +32,6 @@ import (
 )
 
 type ForksOptions struct {
-	current     bool
 	repository  string
 	workspace   string
 	credentials string
@@ -83,6 +82,5 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", true, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }

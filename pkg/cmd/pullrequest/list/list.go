@@ -35,7 +35,6 @@ import (
 )
 
 type PrListOptions struct {
-	current       bool
 	credentials   string
 	workspace     string
 	repository    string
@@ -64,7 +63,7 @@ var ListCmd = &cobra.Command{
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		if opts.current {
+		if opts.repository == "" {
 			opts.repository = util.GetCurrentDir()
 		}
 
@@ -154,7 +153,6 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().BoolVarP(&opts.current, "current", "c", false, "Reference repository from current directory")
 	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
 	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
