@@ -29,9 +29,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
+	"github.com/suny-am/bb/internal/git"
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/internal/table"
-	"github.com/suny-am/bb/internal/util"
 )
 
 type PrListOptions struct {
@@ -64,7 +64,7 @@ var ListCmd = &cobra.Command{
 		}
 
 		if opts.repository == "" {
-			opts.repository = util.GetCurrentDir()
+			opts.repository = git.GetGitRepo()
 		}
 
 		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)

@@ -66,7 +66,7 @@ func GetUsername() (string, error) {
 	}
 	username := k.String("user")
 	if username == "" {
-		return "", errors.New("Could not get username from config")
+		return "", errors.New("could not get username from config")
 	}
 	return username, nil
 }
@@ -77,7 +77,7 @@ func GetWorkspace() (string, error) {
 	}
 	workspace := k.String("workspace")
 	if workspace == "" {
-		return "", errors.New("Could not get workspace from config")
+		return "", errors.New("could not get workspace from config")
 	}
 	return workspace, nil
 }
@@ -88,7 +88,7 @@ func GetSpinnerStyle() (*int, error) {
 	}
 	spinnerStyle := k.Int("spinner")
 	if spinnerStyle == 0 {
-		return nil, errors.New("Could not get spinner style from config")
+		return nil, errors.New("could not get spinner style from config")
 	}
 	return &spinnerStyle, nil
 }
