@@ -31,8 +31,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
 	"github.com/suny-am/bb/internal/config"
+	"github.com/suny-am/bb/internal/git"
 	"github.com/suny-am/bb/internal/keyring"
-	"github.com/suny-am/bb/internal/util"
 )
 
 type ViewOptions struct {
@@ -51,7 +51,7 @@ var ViewCmd = &cobra.Command{
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if opts.repository == "" {
-			opts.repository = util.GetCurrentDir()
+			opts.repository = git.GetGitRepo()
 		}
 
 		if len(args) < 1 {
