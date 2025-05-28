@@ -3,6 +3,7 @@ package git
 import (
 	"log"
 	"os/exec"
+	"strings"
 )
 
 func GetGitRepo() string {
@@ -11,5 +12,7 @@ func GetGitRepo() string {
 		log.Fatal("Not a git repository")
 	}
 
-	return string(cmd)
+	slice := strings.Split(string(cmd), "/")
+
+	return strings.TrimSuffix(slice[len(slice)-1], "\n")
 }
