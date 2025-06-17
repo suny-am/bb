@@ -28,8 +28,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
@@ -41,7 +39,7 @@ import (
 
 const pageLenMax = 50
 
-func getPullrequests(opts *PrListOptions, cmd *cobra.Command) (*api.Pullrequests, error) {
+func getPullrequests(opts *api.PullrequestListOptions, cmd *cobra.Command) (*api.Pullrequests, error) {
 	var pullrequests api.Pullrequests
 	var err error
 
@@ -59,7 +57,7 @@ func getPullrequests(opts *PrListOptions, cmd *cobra.Command) (*api.Pullrequests
 	return &pullrequests, err
 }
 
-func get(pullrequests *api.Pullrequests, cmd *cobra.Command, opts *PrListOptions) error {
+func get(pullrequests *api.Pullrequests, cmd *cobra.Command, opts *api.PullrequestListOptions) error {
 	client := http2.Init(cmd)
 
 	req, err := generateRequest(opts)
@@ -70,60 +68,61 @@ func get(pullrequests *api.Pullrequests, cmd *cobra.Command, opts *PrListOptions
 	return nil
 }
 
-func generateRequest(opts *PrListOptions) (*http.Request, error) {
+func generateRequest(opts *api.PullrequestListOptions) (*http.Request, error) {
 	var endpoint string
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
 
-	if opts.repository == "" {
+	if opts.Repository == "" {
 
 		user, err := config.GetUsername()
 		if err != nil {
 			return nil, err
 		}
-		endpoint = fmt.Sprintf("https://api.bitbucket.org/2.0/workspaces/%s/pullrequests/%s",
-			opts.workspace, user)
+		endpoint = fmt.Sprintf("%s/pullrequests/%s",
+			http2.DetermineWorkspaceEndpoint(opts), user)
 	} else {
 
-		workspace, err := config.GetWorkspace()
-		if err != nil {
-			if opts.workspace == "" {
+		if opts.Workspace == "" {
+			workspace, err := config.GetWorkspace()
+			if err != nil {
 				return nil, err
 			}
-			workspace = opts.workspace
+			opts.Workspace = workspace
 		}
 
-		endpoint = "https://api.bitbucket.org/2.0/repositories"
-		endpoint = fmt.Sprintf("%s/%s/%s/pullrequests", endpoint, workspace, opts.repository)
-
-		if opts.titleFilter != "" {
-			endpoint = fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.titleFilter)
-		} else if opts.creatorFilter != "" {
-			endpoint = fmt.Sprintf("%s?q=author.nickname=\"%s\"", endpoint, opts.creatorFilter)
-			endpoint = strings.ReplaceAll(endpoint, " ", "%20")
-		}
+		endpoint = fmt.Sprintf("%s/pullrequests", http2.DetermineRepositoryEndpoint(opts))
 	}
 
-	if opts.stateFilter != "" {
-		endpoint = fmt.Sprintf("%s?q=state=\"%s\"", endpoint, opts.stateFilter)
+	if opts.Title != "" {
+		opts.Title = fmt.Sprintf("q=title~\"%s\"", opts.Title)
+	}
+	if opts.Creator != "" {
+		opts.Creator = fmt.Sprintf("q=author.nickname~\"%s\"", opts.Creator)
+	}
+	if opts.State != "" {
+		endpoint = fmt.Sprintf("q=state=\"%s\"", opts.State)
 	}
 
-	pageLength := int(math.Min(float64(opts.limit), float64(pageLenMax)))
+	opts.PageLen = int(math.Min(float64(opts.PageLen), float64(pageLenMax)))
+
+	endpoint = http2.DetermineQueryParametersDirect(endpoint, []string{
+		opts.Title,
+		opts.Creator,
+		opts.State,
+		fmt.Sprintf("pageLen=%d", opts.PageLen),
+	})
 
 	endpointUrl, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	if opts.limit > 0 {
-		query := endpointUrl.Query()
-		query.Add("pagelen", strconv.Itoa(pageLength))
-		endpointUrl.RawQuery = query.Encode()
-	}
-
 	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)
+
+	fmt.Println(endpointUrl.String())
 
 	return req, err
 }
@@ -171,7 +170,7 @@ func fetchPullrequestsRecurse(pullrequests *api.Pullrequests, client *http2.Clie
 			newReq, err := http.NewRequest("GET", particalPullrequests.Next, nil)
 			newReq.Header.Add("Authorization", req.Header["Authorization"][0])
 			newReq.Header.Add("Accept", req.Header["Accept"][0])
-			if err != nil || len(pullrequests.Values) >= opts.limit {
+			if err != nil || len(pullrequests.Values) >= opts.PageLen {
 				fmt.Println(err)
 				return
 			}

@@ -25,10 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
-	"net/url"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
@@ -37,7 +34,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getPipelines(opts *ListOptions, cmd *cobra.Command) (*api.Pipelines, error) {
+func getPipelines(opts *api.PipelineListOptions, cmd *cobra.Command) (*api.Pipelines, error) {
 	var pipelines api.Pipelines
 	var err error
 
@@ -55,7 +52,7 @@ func getPipelines(opts *ListOptions, cmd *cobra.Command) (*api.Pipelines, error)
 	return &pipelines, err
 }
 
-func get(pipelines *api.Pipelines, cmd *cobra.Command, opts *ListOptions) error {
+func get(pipelines *api.Pipelines, cmd *cobra.Command, opts *api.PipelineListOptions) error {
 	client := http2.Init(cmd)
 	req, err := generateRequest(opts)
 	if err != nil {
@@ -93,7 +90,7 @@ func fetchPipelinesRecurse(client *http2.Client, req *http.Request, pipelines *a
 			if err != nil {
 				panic(err)
 			}
-			if len(pipelines.Values) >= opts.limit {
+			if len(pipelines.Values) >= opts.PageLen {
 				return
 			}
 			fetchPipelinesRecurse(client, newReq, pipelines)
@@ -101,27 +98,15 @@ func fetchPipelinesRecurse(client *http2.Client, req *http.Request, pipelines *a
 	}
 }
 
-func generateRequest(opts *ListOptions) (*http.Request, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+func generateRequest(opts *api.PipelineListOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
 
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pipelines", opts.workspace, opts.repository)
+	endpoint := fmt.Sprintf("%s/pipelines",
+		http2.DetermineRepositoryEndpoint(opts))
 
-	pageLength := int(math.Min(float64(opts.limit), float64(100)))
+	endpoint = http2.DetermineQueryParameters(opts, endpoint)
 
-	endpoint = fmt.Sprintf("%s?sort=-created_on", endpoint)
-
-	endpointUrl, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	if opts.limit > 0 {
-		query := endpointUrl.Query()
-		query.Add("pagelen", strconv.Itoa(pageLength))
-		endpointUrl.RawQuery = query.Encode()
-	}
-
-	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
+	req, err := http.NewRequest("GET", endpoint, nil)
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)

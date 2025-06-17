@@ -31,13 +31,7 @@ import (
 	"github.com/suny-am/bb/internal/keyring"
 )
 
-type ForksOptions struct {
-	repository  string
-	workspace   string
-	credentials string
-}
-
-var opts ForksOptions
+var opts api.ForkListptions
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
@@ -53,8 +47,8 @@ var ListCmd = &cobra.Command{
 			return errors.New("only one <repository> argument is allowed")
 		}
 
-		opts.repository = args[0]
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Repository = args[0]
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 
 		forks, err := getForks(&opts, cmd)
 		if err != nil {
@@ -82,5 +76,5 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ListCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }

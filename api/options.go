@@ -35,4 +35,19 @@ type (
 		State     string
 		Approvals int
 	}
+
+	RepositoryViewOptions struct {
+		BaseOptions
+	}
+
+	RepositoryListOptions struct {
+		BaseOptions
+		QueryParameters
+
+		Name string
+	}
+
+	ForkListptions struct {
+		BaseOptions
+	}
 )
