@@ -28,7 +28,7 @@ func searchCode(opts *api.CodeSearchOptions, cmd *cobra.Command) (*api.CodeSearc
 		spinner.Stop()
 	}()
 
-	spinner.Start("Searching code")
+	spinner.Start("searching code")
 
 	return &code, err
 }

@@ -122,8 +122,6 @@ func generateRequest(opts *api.PullrequestListOptions) (*http.Request, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)
 
-	fmt.Println(endpointUrl.String())
-
 	return req, err
 }
 

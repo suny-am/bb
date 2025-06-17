@@ -29,6 +29,7 @@ import (
 	"github.com/suny-am/bb/internal/keyring"
 	"github.com/suny-am/bb/pkg/cmd/code"
 	"github.com/suny-am/bb/pkg/cmd/configure"
+	"github.com/suny-am/bb/pkg/cmd/fork"
 	"github.com/suny-am/bb/pkg/cmd/pipeline"
 	"github.com/suny-am/bb/pkg/cmd/pullrequest"
 	"github.com/suny-am/bb/pkg/cmd/repository"
@@ -71,6 +72,7 @@ func init() {
 	rootCmd.AddCommand(pipeline.PipelineCmd)
 	rootCmd.AddCommand(pullrequest.PullrequestCmd)
 	rootCmd.AddCommand(repository.RepositoryCmd)
+	rootCmd.AddCommand(fork.ForkCmd)
 
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug mode")
 }

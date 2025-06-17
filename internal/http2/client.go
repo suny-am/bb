@@ -58,8 +58,6 @@ func DetermineQueryParametersDirect(endpoint string, queryParams []string) strin
 
 	for _, qp := range queryParams {
 
-		fmt.Println("QueryParameters", qp, "\r")
-
 		if qp == "" {
 			continue
 		}
