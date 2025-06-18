@@ -139,5 +139,6 @@ func init() {
 	}
 	ListCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 	ListCmd.Flags().StringVarP(&opts.Repository, "repository", "r", "", "Target repository")
+	ListCmd.Flags().StringVarP(&opts.Sort, "sort", "s", "-created_on", "sorting filter")
 	ListCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Item limit")
 }
