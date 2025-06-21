@@ -66,8 +66,7 @@ func Draw(columnData []ColumnData, rowData []RowData) {
 
 	if _, err := tea.NewProgram(
 		tm,
-		tea.WithAltScreen(),
-		tea.WithMouseCellMotion()).Run(); err != nil {
+		tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
