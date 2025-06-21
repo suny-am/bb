@@ -34,23 +34,12 @@ import (
 	"github.com/suny-am/bb/internal/table"
 )
 
-type PrListOptions struct {
-	credentials   string
-	workspace     string
-	repository    string
-	titleFilter   string
-	creatorFilter string
-	stateFilter   string
-	approvals     int
-	limit         int
-}
-
 var (
 	approvalCountStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#22dd99"))
 	commentCountStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffcc00"))
 	zeroCountStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
 
-	opts PrListOptions
+	opts api.PullrequestListOptions
 )
 
 var ListCmd = &cobra.Command{
@@ -59,15 +48,15 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more public or workspace related pullrequests`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.limit < 0 {
+		if opts.PageLen < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		if opts.repository == "" {
-			opts.repository = git.GetGitRepo()
+		if opts.Repository == "" {
+			opts.Repository = git.GetGitRepo()
 		}
 
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		pullrequests, err := getPullrequests(&opts, cmd)
 		if err != nil {
 			return err
@@ -108,7 +97,7 @@ func viewPullrequests(pullrequests *api.Pullrequests) error {
 			}
 		}
 
-		if opts.approvals >= 0 && approvalCount > opts.approvals {
+		if opts.Approvals >= 0 && approvalCount > opts.Approvals {
 			continue
 		}
 
@@ -153,11 +142,11 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ListCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
-	ListCmd.Flags().StringVarP(&opts.titleFilter, "title", "t", "", "Title match filter")
-	ListCmd.Flags().StringVar(&opts.creatorFilter, "creator", "", "Creator match filter")
-	ListCmd.Flags().StringVarP(&opts.stateFilter, "state", "s", "", "Pullrequest state filter")
-	ListCmd.Flags().IntVarP(&opts.approvals, "approvals", "a", -1, "Approvals count filter")
-	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
+	ListCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ListCmd.Flags().StringVarP(&opts.Repository, "repo", "r", "", "Target repository")
+	ListCmd.Flags().StringVarP(&opts.Title, "title", "t", "", "Title match filter")
+	ListCmd.Flags().StringVar(&opts.Creator, "creator", "", "Creator match filter")
+	ListCmd.Flags().StringVarP(&opts.State, "state", "s", "", "Pullrequest state filter")
+	ListCmd.Flags().IntVarP(&opts.Approvals, "approvals", "a", -1, "Approvals count filter")
+	ListCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Item limit")
 }

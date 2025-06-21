@@ -35,7 +35,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getPullrequest(opts *ViewOptions, cmd *cobra.Command) (*api.Pullrequest, error) {
+func getPullrequest(opts *api.PullrequestViewOptions, cmd *cobra.Command) (*api.Pullrequest, error) {
 	var pullrequest api.Pullrequest
 	var err error
 	go func() {
@@ -51,7 +51,7 @@ func getPullrequest(opts *ViewOptions, cmd *cobra.Command) (*api.Pullrequest, er
 	return &pullrequest, err
 }
 
-func get(pullrequest *api.Pullrequest, cmd *cobra.Command, opts *ViewOptions) error {
+func get(pullrequest *api.Pullrequest, cmd *cobra.Command, opts *api.PullrequestViewOptions) error {
 	client := http2.Init(cmd)
 
 	req, err := generateRequest(opts)
@@ -113,10 +113,15 @@ func get(pullrequest *api.Pullrequest, cmd *cobra.Command, opts *ViewOptions) er
 	return nil
 }
 
-func generateRequest(opts *ViewOptions) (*http.Request, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pullrequests", opts.workspace, opts.repository)
-	idEndpoint := fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.pullrequest)
+func generateRequest(opts *api.PullrequestViewOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
+
+	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/pullrequests",
+		opts.Workspace,
+		opts.Repository)
+
+	idEndpoint := fmt.Sprintf("%s?q=title~\"%s\"", endpoint, opts.Pullrequest)
+
 	idEndpoint = strings.ReplaceAll(idEndpoint, " ", "%20")
 
 	req, err := http.NewRequest("GET", idEndpoint, nil)

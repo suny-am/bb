@@ -25,10 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
-	"net/url"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
@@ -37,7 +34,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getRepos(opts *ListOptions, cmd *cobra.Command) (*api.Repositories, error) {
+func getRepos(opts *api.RepositoryListOptions, cmd *cobra.Command) (*api.Repositories, error) {
 	var repositories api.Repositories
 	var err error
 
@@ -55,7 +52,7 @@ func getRepos(opts *ListOptions, cmd *cobra.Command) (*api.Repositories, error) 
 	return &repositories, err
 }
 
-func get(repositories *api.Repositories, cmd *cobra.Command, opts *ListOptions) error {
+func get(repositories *api.Repositories, cmd *cobra.Command, opts *api.RepositoryListOptions) error {
 	client := http2.Init(cmd)
 	req, err := generateRequest(opts)
 	if err != nil {
@@ -90,7 +87,7 @@ func fetchReposRecurse(repositories *api.Repositories, client *http2.Client, req
 				fmt.Printf("Error parsing URL: %s", err)
 				return
 			}
-			if len(repositories.Values) >= opts.limit {
+			if len(repositories.Values) >= opts.PageLen {
 				return
 			}
 			fetchReposRecurse(repositories, client, req)
@@ -98,37 +95,24 @@ func fetchReposRecurse(repositories *api.Repositories, client *http2.Client, req
 	}
 }
 
-func generateRequest(opts *ListOptions) (*http.Request, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+func generateRequest(opts *api.RepositoryListOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
 	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
-	if opts.workspace != "" {
-		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.workspace)
+	if opts.Workspace != "" {
+		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.Workspace)
 	}
 
-	if opts.nameFilter != "" {
-		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.nameFilter)
-	}
-	endpointUrl, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	query := endpointUrl.Query()
-
-	if opts.sort != "" {
-		query.Add("sort", fmt.Sprintf("-%s", opts.sort))
-		endpointUrl.RawQuery = query.Encode()
+	if opts.Name != "" {
+		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.Name)
+		endpoint = http2.DetermineQueryParametersDirect(endpoint, []string{
+			fmt.Sprintf("q=name~\"%s\"", opts.Name),
+			fmt.Sprintf("sort=%s", opts.Sort),
+			fmt.Sprintf("pagelen=%d", opts.PageLen),
+		})
 	}
 
-	pageLength := int(math.Min(float64(opts.limit), float64(30)))
-
-	if opts.limit > 0 {
-		query.Add("pagelen", strconv.Itoa(pageLength))
-		endpointUrl.RawQuery = query.Encode()
-	}
-
-	req, err := http.NewRequest("GET", endpointUrl.String(), nil)
+	req, err := http.NewRequest("GET", endpoint, nil)
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", authHeaderValue)

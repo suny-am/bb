@@ -36,7 +36,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getRepo(opts *ViewOptions, cmd *cobra.Command) (*api.Repository, error) {
+func getRepo(opts *api.RepositoryViewOptions, cmd *cobra.Command) (*api.Repository, error) {
 	var repository api.Repository
 	var err error
 
@@ -54,7 +54,7 @@ func getRepo(opts *ViewOptions, cmd *cobra.Command) (*api.Repository, error) {
 	return &repository, err
 }
 
-func get(repository *api.Repository, cmd *cobra.Command, opts *ViewOptions) error {
+func get(repository *api.Repository, cmd *cobra.Command, opts *api.RepositoryViewOptions) error {
 	client := http2.Init(cmd)
 	req, err := generateRequest(opts)
 	if err != nil {
@@ -110,9 +110,9 @@ func get(repository *api.Repository, cmd *cobra.Command, opts *ViewOptions) erro
 	return nil
 }
 
-func generateRequest(opts *ViewOptions) (*http.Request, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, opts.repository)
+func generateRequest(opts *api.RepositoryViewOptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
+	endpoint := http2.DetermineRepositoryEndpoint(opts)
 	req, err := http.NewRequest("GET", endpoint, nil)
 
 	req.Header.Add("Accept", "application/json")

@@ -34,7 +34,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func getForks(opts *ForksOptions, cmd *cobra.Command) (*api.Repositories, error) {
+func getForks(opts *api.ForkListptions, cmd *cobra.Command) (*api.Repositories, error) {
 	var forks api.Repositories
 	var err error
 
@@ -52,7 +52,7 @@ func getForks(opts *ForksOptions, cmd *cobra.Command) (*api.Repositories, error)
 	return &forks, err
 }
 
-func get(forks *api.Repositories, cmd *cobra.Command, opts *ForksOptions) error {
+func get(forks *api.Repositories, cmd *cobra.Command, opts *api.ForkListptions) error {
 	client := http2.Init(cmd)
 
 	req, err := generateRequest(opts)
@@ -76,9 +76,9 @@ func get(forks *api.Repositories, cmd *cobra.Command, opts *ForksOptions) error 
 	return nil
 }
 
-func generateRequest(opts *ForksOptions) (*http.Request, error) {
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s/forks", opts.workspace, opts.repository)
+func generateRequest(opts *api.ForkListptions) (*http.Request, error) {
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
+	endpoint := fmt.Sprintf("%s/forks", http2.DetermineRepositoryEndpoint(opts))
 	forksReq, err := http.NewRequest("GET", endpoint, nil)
 
 	forksReq.Header.Add("Accept", "application/json")

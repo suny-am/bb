@@ -35,14 +35,7 @@ import (
 	"github.com/suny-am/bb/internal/keyring"
 )
 
-type ViewOptions struct {
-	repository  string
-	workspace   string
-	pullrequest string
-	credentials string
-}
-
-var opts ViewOptions
+var opts api.PullrequestViewOptions
 
 var ViewCmd = &cobra.Command{
 	Use:   "view",
@@ -50,8 +43,8 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a pullrequest in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.repository == "" {
-			opts.repository = git.GetGitRepo()
+		if opts.Repository == "" {
+			opts.Repository = git.GetGitRepo()
 		}
 
 		if len(args) < 1 {
@@ -62,8 +55,8 @@ var ViewCmd = &cobra.Command{
 			return errors.New("only one <pullrequest> argument is allowed")
 		}
 
-		opts.pullrequest = args[0]
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Pullrequest = args[0]
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		pullrequest, err := getPullrequest(&opts, cmd)
 		if err != nil {
 			return err
@@ -151,6 +144,6 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ViewCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
+	ViewCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ViewCmd.Flags().StringVarP(&opts.Repository, "repository", "r", "", "Target repository")
 }

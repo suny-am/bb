@@ -36,13 +36,7 @@ import (
 	"github.com/suny-am/bb/internal/textview"
 )
 
-type ViewOptions struct {
-	repository  string
-	workspace   string
-	credentials string
-}
-
-var opts ViewOptions
+var opts api.RepositoryViewOptions
 
 var ViewCmd = &cobra.Command{
 	Use:   "view",
@@ -50,8 +44,8 @@ var ViewCmd = &cobra.Command{
 	Long:  `View a repository in a given workspace`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.repository == "" {
-			opts.repository = git.GetGitRepo()
+		if opts.Repository == "" {
+			opts.Repository = git.GetGitRepo()
 		} else {
 
 			if len(args) < 1 {
@@ -62,10 +56,10 @@ var ViewCmd = &cobra.Command{
 				return errors.New("only one <repository> argument is allowed")
 			}
 
-			opts.repository = args[0]
+			opts.Repository = args[0]
 		}
 
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		repo, err := getRepo(&opts, cmd)
 		if err != nil {
 			return err
@@ -140,5 +134,5 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	ViewCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ViewCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
 }

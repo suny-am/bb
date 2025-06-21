@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -16,7 +15,7 @@ import (
 	"github.com/suny-am/bb/internal/textinput"
 )
 
-func searchCode(opts *SearchOptions, cmd *cobra.Command) (*api.CodeSearchResponse, error) {
+func searchCode(opts *api.CodeSearchOptions, cmd *cobra.Command) (*api.CodeSearchResponse, error) {
 	var code api.CodeSearchResponse
 	var err error
 
@@ -29,12 +28,12 @@ func searchCode(opts *SearchOptions, cmd *cobra.Command) (*api.CodeSearchRespons
 		spinner.Stop()
 	}()
 
-	spinner.Start("Searching code")
+	spinner.Start("searching code")
 
 	return &code, err
 }
 
-func search(code *api.CodeSearchResponse, cmd *cobra.Command, opts *SearchOptions) error {
+func search(code *api.CodeSearchResponse, cmd *cobra.Command, opts *api.CodeSearchOptions) error {
 	client := http2.Init(cmd)
 	var req *http.Request
 	var resp *http.Response
@@ -62,39 +61,27 @@ func search(code *api.CodeSearchResponse, cmd *cobra.Command, opts *SearchOption
 
 	for i := range code.Values {
 		includeDefaultBranch(&code.Values[i], client, req)
-		if opts.includeSource {
+		if opts.IncludeSource {
 			includeSource(&code.Values[i], client, req)
 		}
 	}
 	return nil
 }
 
-func generateRequest(opts *SearchOptions) (*http.Request, error) {
-	searchQuery := strings.ReplaceAll(opts.searchParam, " ", "%20")
-	if opts.repository != "" {
-		searchQuery = fmt.Sprintf("%s+repo:%s",
-			searchQuery,
-			opts.repository)
-	}
-	endpoint := fmt.Sprintf("https://api.bitbucket.org/2.0/workspaces/%s/search/code?search_query=%s",
-		opts.workspace,
-		searchQuery)
+func generateRequest(opts *api.CodeSearchOptions) (*http.Request, error) {
+	opts.Search_Query = strings.ReplaceAll(opts.Search_Query, " ", "%20")
 
-	authHeaderValue := fmt.Sprintf("Basic %s", opts.credentials)
+	endpoint := fmt.Sprintf("%s/search/code",
+		http2.DetermineWorkspaceEndpoint(opts),
+	)
+
+	endpoint = http2.DetermineQueryParameters(opts, endpoint)
+
+	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
 
 	req, err := http.NewRequest("GET", endpoint, nil)
 	req.Header.Add("Authorization", authHeaderValue)
 	req.Header.Add("Accept", "application/json")
-
-	if opts.limit < 0 {
-		opts.limit = 0
-	}
-
-	if opts.limit > 0 {
-		q := req.URL.Query()
-		q.Add("pagelen", strconv.Itoa(opts.limit))
-		req.URL.RawQuery = q.Encode()
-	}
 
 	if err != nil {
 		return nil, err
@@ -104,11 +91,18 @@ func generateRequest(opts *SearchOptions) (*http.Request, error) {
 }
 
 func includeDefaultBranch(code *api.CodeItem, client *http2.Client, req *http.Request) {
-	repo := strings.Split(code.File.Links.Self.Href, "/")[6]
-	req.URL, _ = req.URL.Parse(fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%s/%s", opts.workspace, repo))
+	opts.Repository = strings.Split(code.File.Links.Self.Href, "/")[6]
+
+	req.URL, _ = req.URL.Parse(http2.DetermineRepositoryEndpoint(&opts))
+
 	defaultBranch := fetchDefaultBranch(client, req)
+
 	if defaultBranch != "" {
-		code.File.Links.Html.Href = fmt.Sprintf("https://bitbucket.org/%s/%s/src/%s/%s", opts.workspace, repo, defaultBranch, code.File.Path)
+		code.File.Links.Html.Href = fmt.Sprintf("https://bitbucket.org/%s/%s/src/%s/%s",
+			opts.Workspace,
+			opts.Repository,
+			defaultBranch,
+			code.File.Path)
 	}
 }
 

@@ -35,17 +35,8 @@ import (
 	"github.com/suny-am/bb/internal/pager"
 )
 
-type SearchOptions struct {
-	repository    string
-	workspace     string
-	credentials   string
-	searchParam   string
-	includeSource bool
-	limit         int
-}
-
 var (
-	opts    SearchOptions
+	opts    api.CodeSearchOptions
 	hlFg    = lipgloss.AdaptiveColor{Light: "#000", Dark: "#fff"}
 	hlBg    = lipgloss.AdaptiveColor{Light: "#ffbb99", Dark: "#aa11dd"}
 	mdStyle = lipgloss.NewStyle().Foreground(hlFg).Background(hlBg)
@@ -65,8 +56,8 @@ var SearchCmd = &cobra.Command{
 			return errors.New("only 1 <searchParam> allowed")
 		}
 
-		opts.searchParam = args[0]
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Search_Query = args[0]
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		code, err := searchCode(&opts, cmd)
 		if err != nil {
 			fmt.Println(err)
@@ -93,10 +84,10 @@ func init() {
 		workspaceDefaultValue = defaultWorkspace
 	}
 
-	SearchCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	SearchCmd.Flags().StringVarP(&opts.repository, "repo", "r", "", "Target repository")
-	SearchCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Result limit")
-	SearchCmd.Flags().BoolVarP(&opts.includeSource, "source", "s", false, "Include source")
+	SearchCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	SearchCmd.Flags().StringVarP(&opts.Repository, "repo", "r", "", "Target repository")
+	SearchCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Result limit")
+	SearchCmd.Flags().BoolVarP(&opts.IncludeSource, "source", "s", false, "Include source")
 }
 
 func displaySearchResults(code *api.CodeSearchResponse) {
@@ -135,7 +126,7 @@ func displaySearchResults(code *api.CodeSearchResponse) {
 			}
 		}
 
-		if opts.includeSource {
+		if opts.IncludeSource {
 			r, _ := glamour.NewTermRenderer(glamour.WithAutoStyle())
 			source, err := r.Render(c.File.Source)
 			if err == nil {

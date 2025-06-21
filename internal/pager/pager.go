@@ -3,6 +3,8 @@ package pager
 import (
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -19,7 +21,9 @@ var (
 			BorderBottom(true).
 			BorderStyle(lipgloss.NormalBorder()).Width(width)
 	}
-	topOffset int = 4
+	navStyle       = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#55DD55", Dark: "#00FF00"})
+	fadedStyle     = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#333333", Dark: "#666666"})
+	topOffset  int = 4
 )
 
 type binderModel struct {
@@ -103,15 +107,37 @@ func (bm *binderModel) splitPage() []string {
 func (bm binderModel) View() string {
 	var sb strings.Builder
 
-	header := headerStyle(bm.windowWidth).Render(fmt.Sprintf("Page: %d",
-		bm.currentPage,
+	split := bm.splitPage()
+	splitStart := split[bm.verticalScroll:]
+
+	header := headerStyle(bm.windowWidth).Render(fmt.Sprintf("Page: %s Scroll: %s Height:%s Position: %s",
+		navStyle.Render(strconv.Itoa(bm.currentPage)),
+		navStyle.Render(strconv.Itoa(bm.verticalScroll)),
+		navStyle.Render(strconv.Itoa(bm.windowHeight)),
+		navStyle.Render(strconv.Itoa(bm.currentPageSize-bm.verticalScroll)),
 	))
 
-	split := bm.splitPage()
+	var lineNumberStart int
+
+	r, _ := regexp.Compile("Source:")
 
 	for i, v := range split {
-		if i < bm.windowHeight-topOffset && i > bm.verticalScroll {
-			sb.WriteString(fmt.Sprintf("%s\n", v))
+		if r.MatchString(v) {
+			lineNumberStart = i + 2
+		}
+	}
+
+	var lineNumber int
+
+	for i := range len(splitStart) {
+		if i < bm.windowHeight-topOffset+bm.verticalScroll &&
+			i >= bm.verticalScroll {
+			if i+bm.verticalScroll > lineNumberStart {
+				sb.WriteString(fmt.Sprintf("%s %s\n", fadedStyle.Render(strconv.Itoa(lineNumber)), splitStart[i]))
+				lineNumber++
+			} else {
+				sb.WriteString(fmt.Sprintf("%s\n", splitStart[i]))
+			}
 		}
 	}
 
@@ -137,11 +163,10 @@ func Draw(pagesContent []string) {
 	pager.currentPage = 0
 	pager.windowWidth = width
 	pager.windowHeight = height
-	pager.currentPageSize = height
+	pager.currentPageSize = len(strings.Split(pager.pages[0].content, "\n"))
 
 	if _, err := tea.NewProgram(pager,
-		tea.WithAltScreen(),
-		tea.WithMouseAllMotion()).
+		tea.WithAltScreen()).
 		Run(); err != nil {
 		panic(err)
 	}

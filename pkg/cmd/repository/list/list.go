@@ -22,7 +22,6 @@ THE SOFTWARE.
 package list
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -33,15 +32,7 @@ import (
 	"github.com/suny-am/bb/internal/table"
 )
 
-type ListOptions struct {
-	credentials string
-	workspace   string
-	nameFilter  string
-	limit       int
-	sort        string
-}
-
-var opts ListOptions
+var opts api.RepositoryListOptions
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
@@ -49,11 +40,7 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more personal and/or workspace repositories`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.limit < 0 {
-			return errors.New("limit cannot be negative or 0")
-		}
-
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		repos, err := getRepos(&opts, cmd)
 		if err != nil {
 			return err
@@ -112,8 +99,8 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
-	ListCmd.Flags().StringVarP(&opts.nameFilter, "name", "n", "", "Name match filter")
-	ListCmd.Flags().StringVarP(&opts.sort, "sort", "s", "", "Sorting mode")
+	ListCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ListCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Item limit")
+	ListCmd.Flags().StringVarP(&opts.Name, "name", "n", "", "Name match filter")
+	ListCmd.Flags().StringVarP(&opts.Sort, "sort", "s", "", "Sorting mode")
 }

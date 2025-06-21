@@ -35,14 +35,7 @@ import (
 	"github.com/suny-am/bb/internal/table"
 )
 
-type ListOptions struct {
-	credentials string
-	workspace   string
-	repository  string
-	limit       int
-}
-
-var opts ListOptions
+var opts api.PipelineListOptions
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
@@ -50,15 +43,15 @@ var ListCmd = &cobra.Command{
 	Long:  `List one or more personal and/or workspace repository pipelines`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if opts.limit < 0 {
+		if opts.PageLen < 0 {
 			return errors.New("limit cannot be negative or 0")
 		}
 
-		if opts.repository == "" {
-			opts.repository = git.GetGitRepo()
+		if opts.Repository == "" {
+			opts.Repository = git.GetGitRepo()
 		}
 
-		opts.credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
+		opts.Credentials = cmd.Context().Value(keyring.CredentialsKey{}).(string)
 		pipelines, err := getPipelines(&opts, cmd)
 		if err != nil {
 			return err
@@ -144,7 +137,8 @@ func init() {
 	} else {
 		workspaceDefaultValue = defaultWorkspace
 	}
-	ListCmd.Flags().StringVarP(&opts.workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
-	ListCmd.Flags().StringVarP(&opts.repository, "repository", "r", "", "Target repository")
-	ListCmd.Flags().IntVarP(&opts.limit, "limit", "l", 0, "Item limit")
+	ListCmd.Flags().StringVarP(&opts.Workspace, "workspace", "w", workspaceDefaultValue, "Target workspace")
+	ListCmd.Flags().StringVarP(&opts.Repository, "repository", "r", "", "Target repository")
+	ListCmd.Flags().StringVarP(&opts.Sort, "sort", "s", "-created_on", "sorting filter")
+	ListCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Item limit")
 }
