@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/api"
@@ -80,7 +81,23 @@ func fetchReposRecurse(repositories *api.Repositories, client *http2.Client, req
 	}
 
 	if partialRepositories.Values != nil {
-		repositories.Values = append(repositories.Values, partialRepositories.Values...)
+
+		var projectMatchRepos []api.Repository
+		if opts.Project == "" {
+			projectMatchRepos = partialRepositories.Values
+		} else {
+			projectMatchRepos = slices.Collect(func(yield func(api.Repository) bool) {
+				for _, r := range partialRepositories.Values {
+					if r.Project.Name == opts.Project {
+						if !yield(r) {
+							return
+						}
+					}
+				}
+			})
+		}
+
+		repositories.Values = append(repositories.Values, projectMatchRepos...)
 		if partialRepositories.Next != "" {
 			req.URL, err = req.URL.Parse(partialRepositories.Next)
 			if err != nil {
@@ -99,18 +116,30 @@ func generateRequest(opts *api.RepositoryListOptions) (*http.Request, error) {
 	authHeaderValue := fmt.Sprintf("Basic %s", opts.Credentials)
 	endpoint := "https://api.bitbucket.org/2.0/repositories"
 
+	// always request make page size when filtering by project to make query faster
+	if opts.Project != "" {
+		opts.PageLen = 100
+	}
+
 	if opts.Workspace != "" {
 		endpoint = fmt.Sprintf("%s/%s", endpoint, opts.Workspace)
 	}
 
+	queryParamSlice := []string{}
+
 	if opts.Name != "" {
-		endpoint = fmt.Sprintf("%s?q=name~\"%s\"", endpoint, opts.Name)
-		endpoint = http2.DetermineQueryParametersDirect(endpoint, []string{
-			fmt.Sprintf("q=name~\"%s\"", opts.Name),
-			fmt.Sprintf("sort=%s", opts.Sort),
-			fmt.Sprintf("pagelen=%d", opts.PageLen),
-		})
+		queryParamSlice = append(queryParamSlice, fmt.Sprintf("q=name~\"%s\"", opts.Name))
 	}
+
+	if opts.Sort != "" {
+		queryParamSlice = append(queryParamSlice, fmt.Sprintf("sort=%s", opts.Sort))
+	}
+
+	if opts.PageLen > 0 {
+		queryParamSlice = append(queryParamSlice, fmt.Sprintf("pagelen=%d", opts.PageLen))
+	}
+
+	endpoint = http2.DetermineQueryParametersDirect(endpoint, queryParamSlice)
 
 	req, err := http.NewRequest("GET", endpoint, nil)
 

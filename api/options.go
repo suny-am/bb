@@ -5,6 +5,7 @@ type (
 		Credentials string
 		Workspace   string
 		Repository  string
+		Project     string
 	}
 
 	CodeSearchOptions struct {

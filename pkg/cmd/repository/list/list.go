@@ -103,4 +103,5 @@ func init() {
 	ListCmd.Flags().IntVarP(&opts.PageLen, "limit", "l", 0, "Item limit")
 	ListCmd.Flags().StringVarP(&opts.Name, "name", "n", "", "Name match filter")
 	ListCmd.Flags().StringVarP(&opts.Sort, "sort", "s", "", "Sorting mode")
+	ListCmd.Flags().StringVarP(&opts.Project, "project", "p", "", "Filter by project name")
 }
