@@ -28,5 +28,6 @@ type (
 	Type struct {
 		Name string
 		Type string
+		Key  string
 	}
 )

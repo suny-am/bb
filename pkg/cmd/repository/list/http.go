@@ -88,7 +88,8 @@ func fetchReposRecurse(repositories *api.Repositories, client *http2.Client, req
 		} else {
 			projectMatchRepos = slices.Collect(func(yield func(api.Repository) bool) {
 				for _, r := range partialRepositories.Values {
-					if r.Project.Name == opts.Project {
+					if r.Project.Name == opts.Project ||
+						r.Project.Key == opts.Project {
 						if !yield(r) {
 							return
 						}
