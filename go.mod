@@ -31,7 +31,7 @@ require (
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
