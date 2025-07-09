@@ -27,6 +27,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/suny-am/bb/internal/keyring"
+	"github.com/suny-am/bb/pkg/cmd/browse"
 	"github.com/suny-am/bb/pkg/cmd/code"
 	"github.com/suny-am/bb/pkg/cmd/configure"
 	"github.com/suny-am/bb/pkg/cmd/fork"
@@ -73,6 +74,7 @@ func init() {
 	rootCmd.AddCommand(pullrequest.PullrequestCmd)
 	rootCmd.AddCommand(repository.RepositoryCmd)
 	rootCmd.AddCommand(fork.ForkCmd)
+	rootCmd.AddCommand(browse.BrowseCmd)
 
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Debug mode")
 }
